@@ -20,6 +20,7 @@ import com.example.learnify.ui.components.BottomNavigation
 import com.example.learnify.ui.theme.AppBackgroundColor
 import com.example.learnify.viewmodel.UserViewModel
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +34,11 @@ class MainActivity : ComponentActivity() {
 
                 val userViewModel: UserViewModel = viewModel()
                 val courseViewModel: CourseViewModel = viewModel()
+
+                // إضافة LaunchedEffect لتحميل المفضلة عند بداية التطبيق
+                LaunchedEffect(Unit) {
+                    courseViewModel.initializeFavorites()
+                }
 
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
@@ -92,7 +98,8 @@ class MainActivity : ComponentActivity() {
                             courseDetailsScreen(
                                 courseId = courseId,
                                 navController = navController,
-                                viewModel = courseViewModel
+                                viewModel = courseViewModel,
+                                userViewModel = userViewModel
                             )
                         }
                     }
