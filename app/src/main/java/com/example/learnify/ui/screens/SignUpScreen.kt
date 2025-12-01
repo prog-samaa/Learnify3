@@ -30,7 +30,6 @@ import com.example.learnify.viewmodel.UserViewModel
 
 @Composable
 fun SignUpScreen(navController: NavController, viewModel: UserViewModel) {
-
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
@@ -44,7 +43,6 @@ fun SignUpScreen(navController: NavController, viewModel: UserViewModel) {
 
     val context = LocalContext.current
 
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -52,8 +50,6 @@ fun SignUpScreen(navController: NavController, viewModel: UserViewModel) {
             .padding(top = 120.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        // ---------------- Title ----------------
         Text(
             text = "Create Account",
             fontSize = 34.sp,
@@ -74,15 +70,12 @@ fun SignUpScreen(navController: NavController, viewModel: UserViewModel) {
 
         Spacer(modifier = Modifier.height(35.dp))
 
-        // ---------------- NAME ----------------
         OutlinedTextField(
             value = name,
             onValueChange = { name = it },
             singleLine = true,
             placeholder = { Text("Name") },
-            leadingIcon = {
-                Icon(Icons.Default.Person, contentDescription = null, tint = Color.Gray)
-            },
+            leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = Color.Gray) },
             shape = RoundedCornerShape(50),
             modifier = Modifier
                 .fillMaxWidth()
@@ -91,15 +84,12 @@ fun SignUpScreen(navController: NavController, viewModel: UserViewModel) {
 
         Spacer(modifier = Modifier.height(15.dp))
 
-        // ---------------- EMAIL ----------------
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
             singleLine = true,
             placeholder = { Text("Email address") },
-            leadingIcon = {
-                Icon(Icons.Default.Email, contentDescription = null, tint = Color.Gray)
-            },
+            leadingIcon = { Icon(Icons.Default.Email, contentDescription = null, tint = Color.Gray) },
             shape = RoundedCornerShape(50),
             modifier = Modifier
                 .fillMaxWidth()
@@ -108,15 +98,12 @@ fun SignUpScreen(navController: NavController, viewModel: UserViewModel) {
 
         Spacer(modifier = Modifier.height(15.dp))
 
-        // ---------------- PHONE ----------------
         OutlinedTextField(
             value = phone,
             onValueChange = { phone = it },
-            placeholder = { Text("Phone") },
             singleLine = true,
-            leadingIcon = {
-                Icon(Icons.Default.Phone, contentDescription = null, tint = Color.Gray)
-            },
+            placeholder = { Text("Phone") },
+            leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null, tint = Color.Gray) },
             shape = RoundedCornerShape(50),
             modifier = Modifier
                 .fillMaxWidth()
@@ -125,15 +112,12 @@ fun SignUpScreen(navController: NavController, viewModel: UserViewModel) {
 
         Spacer(modifier = Modifier.height(15.dp))
 
-        // ---------------- PASSWORD ----------------
         OutlinedTextField(
             value = password,
             singleLine = true,
             onValueChange = { password = it },
             placeholder = { Text("Password") },
-            leadingIcon = {
-                Icon(Icons.Default.Lock, contentDescription = null, tint = Color.Gray)
-            },
+            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = Color.Gray) },
             trailingIcon = {
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(
@@ -143,8 +127,7 @@ fun SignUpScreen(navController: NavController, viewModel: UserViewModel) {
                     )
                 }
             },
-            visualTransformation = if (passwordVisible)
-                VisualTransformation.None else PasswordVisualTransformation(),
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             shape = RoundedCornerShape(50),
             modifier = Modifier
                 .fillMaxWidth()
@@ -153,7 +136,6 @@ fun SignUpScreen(navController: NavController, viewModel: UserViewModel) {
 
         Spacer(modifier = Modifier.height(25.dp))
 
-        // ---------------- REGISTER BUTTON ----------------
         Button(
             onClick = { viewModel.register(name, email, phone, password) },
             modifier = Modifier
@@ -172,20 +154,16 @@ fun SignUpScreen(navController: NavController, viewModel: UserViewModel) {
 
         Spacer(modifier = Modifier.height(15.dp))
 
-        // ---------------- Login Redirect ----------------
         Row(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(text = "Already have an account? ", fontSize = 14.sp)
-
             Text(
                 text = "Login",
                 color = PrimaryColor,
                 fontSize = 14.sp,
-                modifier = Modifier.clickable {
-                    navController.navigate("login")
-                }
+                modifier = Modifier.clickable { navController.navigate("login") }
             )
         }
 
@@ -198,12 +176,9 @@ fun SignUpScreen(navController: NavController, viewModel: UserViewModel) {
         LaunchedEffect(viewModel.isSuccess.value) {
             if (viewModel.isSuccess.value) {
                 Toast.makeText(context, "Account created successfully!", Toast.LENGTH_SHORT).show()
-                navController.navigate("login") {
-                    popUpTo("signup") { inclusive = true }
-                }
+                navController.navigate("login") { popUpTo("signup") { inclusive = true } }
                 viewModel.isSuccess.value = false
             }
         }
-
     }
 }

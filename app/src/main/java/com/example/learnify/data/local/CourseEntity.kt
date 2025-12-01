@@ -13,9 +13,8 @@ data class CourseEntity(
     val imageUrl: String,
     val rating: Float?,
     val isTrending: Boolean,
-    val category: String , //  category key (e.g. "programming", "medical", "home", etc.)
+    val category: String,
     val isFavorite: Boolean = false,
-    val isWatchLater: Boolean = false ,
+    val isWatchLater: Boolean = false,
     val isDone: Boolean = false
-
 )

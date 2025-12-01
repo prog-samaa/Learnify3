@@ -54,8 +54,7 @@ fun CourseCard(
                         onCourseClick(course)
                     }
                 )
-            }
-        ,
+            },
 
         shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 15.dp)

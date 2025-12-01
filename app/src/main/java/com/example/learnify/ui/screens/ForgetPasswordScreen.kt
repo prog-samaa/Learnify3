@@ -2,7 +2,6 @@ package com.example.learnify.ui.screens
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -22,20 +21,16 @@ import com.example.learnify.viewmodel.UserViewModel
 
 @Composable
 fun ForgotPasswordScreen(navController: NavController, viewModel: UserViewModel) {
-
     val context = LocalContext.current
     var email by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 24.dp)
-            ,
+            .padding(horizontal = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-
-        // -------- Title --------
         Text(
             text = "Forgot Password",
             fontSize = 34.sp,
@@ -45,7 +40,6 @@ fun ForgotPasswordScreen(navController: NavController, viewModel: UserViewModel)
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // -------- Subtitle Centered --------
         Text(
             text = "Enter your email address to receive a reset link and regain access to your account.",
             fontSize = 12.sp,
@@ -57,15 +51,12 @@ fun ForgotPasswordScreen(navController: NavController, viewModel: UserViewModel)
 
         Spacer(modifier = Modifier.height(35.dp))
 
-        // -------- Email Field --------
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
             singleLine = true,
             placeholder = { Text("Email address") },
-            leadingIcon = {
-                Icon(Icons.Default.Email, contentDescription = null, tint = Color.Gray)
-            },
+            leadingIcon = { Icon(Icons.Default.Email, contentDescription = null, tint = Color.Gray) },
             shape = RoundedCornerShape(50),
             modifier = Modifier
                 .fillMaxWidth()
@@ -74,7 +65,6 @@ fun ForgotPasswordScreen(navController: NavController, viewModel: UserViewModel)
 
         Spacer(modifier = Modifier.height(25.dp))
 
-        // -------- Button --------
         Button(
             onClick = {
                 if (email.isNotEmpty()) {
@@ -100,7 +90,6 @@ fun ForgotPasswordScreen(navController: NavController, viewModel: UserViewModel)
 
         Spacer(modifier = Modifier.height(15.dp))
 
-        // -------- Back to login --------
         TextButton(onClick = { navController.navigate("login") }) {
             Text(
                 "Back to Login",

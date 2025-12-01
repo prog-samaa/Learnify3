@@ -9,9 +9,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.learnify.ui.CourseViewModel
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.navigation.NavHostController
+import com.example.learnify.ui.CourseViewModel
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -21,17 +21,15 @@ fun CourseRowScreen(
     viewModel: CourseViewModel = viewModel(),
     query: String,
     isTrending: Boolean = false,
-    isSearch :Boolean = false,
+    isSearch: Boolean = false,
     navController: NavHostController
 ) {
     val categoryKey = viewModel.detectCategoryKeyFromQuery(query)
 
-    val courses by if (isTrending) {
-        viewModel.trendingCourses(query).observeAsState(emptyList())
-    } else if (isSearch) {
-        viewModel.searchResults.observeAsState(emptyList())
-    } else {
-        viewModel.generalCoursesByCategory(categoryKey).observeAsState(emptyList())
+    val courses by when {
+        isTrending -> viewModel.trendingCourses(query).observeAsState(emptyList())
+        isSearch -> viewModel.searchResults.observeAsState(emptyList())
+        else -> viewModel.generalCoursesByCategory(categoryKey).observeAsState(emptyList())
     }
 
     val isTrendingLoading by viewModel.isTrendingLoading.observeAsState(false)
@@ -43,7 +41,6 @@ fun CourseRowScreen(
         isSearch -> isSearchLoading
         else -> isGeneralLoading
     }
-
 
     val trendingError by viewModel.trendingError.observeAsState(null)
     val searchError by viewModel.searchError.observeAsState(null)
@@ -65,7 +62,11 @@ fun CourseRowScreen(
 
     when {
         isLoading -> Loading()
-        error != null -> Text(text = error ?: "Unknown error", modifier = Modifier.padding(16.dp))
+        error != null -> Text(
+            text = error ?: "Unknown error",
+            modifier = Modifier.padding(16.dp)
+        )
+
         courses.isEmpty() -> Text(
             text = error ?: "No Courses Found",
             modifier = Modifier.padding(16.dp)
@@ -74,9 +75,12 @@ fun CourseRowScreen(
         else -> LazyRow(modifier = Modifier.padding(8.dp)) {
             items(courses) { course ->
                 if (isTrending) {
-                    TrendingCourseCard(course = course, onCourseClick = { selectedCourse ->
-                        navController.navigate("courseDetails/${selectedCourse.id}")
-                    })
+                    TrendingCourseCard(
+                        course = course,
+                        onCourseClick = { selectedCourse ->
+                            navController.navigate("courseDetails/${selectedCourse.id}")
+                        }
+                    )
                 } else {
                     CourseCard(
                         course = course,
@@ -88,7 +92,6 @@ fun CourseRowScreen(
                     )
                 }
             }
-
         }
     }
 }

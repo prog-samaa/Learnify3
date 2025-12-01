@@ -31,10 +31,7 @@ fun LoginScreen(navController: NavController, viewModel: UserViewModel) {
     var passwordVisible by remember { mutableStateOf(false) }
 
     val loggedIn by viewModel.isLoggedIn
-    LaunchedEffect(Unit) {
-        viewModel.errorMessage.value = null
-    }
-
+    LaunchedEffect(Unit) { viewModel.errorMessage.value = null }
 
     LaunchedEffect(loggedIn) {
         if (loggedIn) {
@@ -48,16 +45,14 @@ fun LoginScreen(navController: NavController, viewModel: UserViewModel) {
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 24.dp)
-            .padding(top = 130.dp),   // ← مساحة فوق زي الصورة
+            .padding(top = 130.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        // ---------- Title ----------
         Text(
             text = "Log in",
-            fontSize = 45.sp,                               // ← أكبر
+            fontSize = 45.sp,
             color = Color.Black,
-            fontWeight = FontWeight.Bold                   // ← بولد
+            fontWeight = FontWeight.Bold
         )
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -67,38 +62,29 @@ fun LoginScreen(navController: NavController, viewModel: UserViewModel) {
             fontSize = 14.sp,
             color = Color.Gray,
             lineHeight = 18.sp,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         )
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        // ---------- Email ----------
         OutlinedTextField(
             value = email,
-            singleLine = true ,
+            singleLine = true,
             onValueChange = { email = it },
             placeholder = { Text("Email address") },
-            leadingIcon = {
-                Icon(Icons.Default.Email, contentDescription = null, tint = Color.Gray)
-            },
+            leadingIcon = { Icon(Icons.Default.Email, contentDescription = null, tint = Color.Gray) },
             shape = RoundedCornerShape(50),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(55.dp)
-
+            modifier = Modifier.fillMaxWidth().height(55.dp)
         )
 
         Spacer(modifier = Modifier.height(15.dp))
 
-        // ---------- Password ----------
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
             singleLine = true,
             placeholder = { Text("Password") },
-            leadingIcon = {
-                Icon(Icons.Default.Lock, contentDescription = null, tint = Color.Gray)
-            },
+            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = Color.Gray) },
             trailingIcon = {
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(
@@ -108,21 +94,17 @@ fun LoginScreen(navController: NavController, viewModel: UserViewModel) {
                     )
                 }
             },
-            visualTransformation = if (passwordVisible)
-                VisualTransformation.None else PasswordVisualTransformation(),
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             shape = RoundedCornerShape(50),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(55.dp)
+            modifier = Modifier.fillMaxWidth().height(55.dp)
         )
 
         Spacer(modifier = Modifier.height(15.dp))
 
-        // Forgot password - centered
         Text(
             "Forgot Password?",
             color = PrimaryColor,
-            fontSize = 13.sp,              // ← أصغر
+            fontSize = 13.sp,
             modifier = Modifier
                 .clickable { navController.navigate("forgot") }
                 .align(Alignment.CenterHorizontally)
@@ -130,48 +112,34 @@ fun LoginScreen(navController: NavController, viewModel: UserViewModel) {
 
         Spacer(modifier = Modifier.height(25.dp))
 
-        // ---------- Login Button ----------
         Button(
             onClick = { viewModel.login(email, password) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(55.dp),
+            modifier = Modifier.fillMaxWidth().height(55.dp),
             shape = RoundedCornerShape(50),
             colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
             interactionSource = remember { MutableInteractionSource() },
-            elevation = ButtonDefaults.buttonElevation(
-                defaultElevation = 2.dp,
-                pressedElevation = 6.dp
-            )
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp, pressedElevation = 6.dp)
         ) {
             Text("Login", fontSize = 18.sp, color = Color.White)
         }
 
-
         Spacer(modifier = Modifier.height(20.dp))
 
-        // ---------- Create Account ----------
         Row(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "Don’t have an account? ",
-                fontSize = 13.sp
-            )
+            Text(text = "Don’t have an account? ", fontSize = 13.sp)
             Text(
                 text = "Sign Up here",
                 color = PrimaryColor,
-                fontSize = 13.sp ,
-                modifier = Modifier.clickable {
-                    navController.navigate("signup")
-                }
+                fontSize = 13.sp,
+                modifier = Modifier.clickable { navController.navigate("signup") }
             )
         }
 
         Spacer(modifier = Modifier.height(15.dp))
 
-        // Error message
         viewModel.errorMessage.value?.let {
             Text(it, color = MaterialTheme.colorScheme.error)
         }

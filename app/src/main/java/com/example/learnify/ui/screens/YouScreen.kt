@@ -1,6 +1,5 @@
 package com.example.learnify.ui.screens
 
-import android.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -11,7 +10,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckBox
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.WatchLater
 import androidx.compose.material3.*
@@ -33,7 +31,6 @@ import com.example.learnify.ui.components.CourseCard
 import com.example.learnify.ui.theme.AppBackgroundColor
 import com.example.learnify.ui.theme.PrimaryColor
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun YouScreen(
@@ -41,23 +38,18 @@ fun YouScreen(
     userViewModel: UserViewModel,
     courseViewModel: CourseViewModel
 ) {
-
     val user = userViewModel.currentUser.value
     val errorMessage by userViewModel.errorMessage
-
     val favoriteCourses by courseViewModel.favoriteCourses.observeAsState(emptyList())
     val watchLaterCourses by courseViewModel.watchLaterCourses.observeAsState(emptyList())
     val doneCourses by courseViewModel.doneCourses.observeAsState(emptyList())
-
     val scrollState = rememberScrollState()
 
-    // تحميل البيانات عند فتح الشاشة للتأكد
     LaunchedEffect(Unit) {
         courseViewModel.initializeFavorites()
     }
 
     if (user == null) {
-        // لو فيه رسالة خطأ، اعرضها
         if (!errorMessage.isNullOrEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -70,7 +62,6 @@ fun YouScreen(
                 )
             }
         } else {
-            // لو مفيش error message
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -104,7 +95,6 @@ fun YouScreen(
             )
         }
     ) { padding ->
-
         Column(
             modifier = Modifier
                 .padding(padding)
@@ -112,15 +102,12 @@ fun YouScreen(
                 .background(AppBackgroundColor)
                 .verticalScroll(scrollState)
         ) {
-
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
-                // ---------------- PROFILE IMAGE ---------------
                 Box(
                     modifier = Modifier
                         .size(80.dp)
@@ -152,7 +139,6 @@ fun YouScreen(
 
                 Spacer(Modifier.height(24.dp))
 
-                // EDIT PROFILE BUTTON
                 Button(
                     onClick = { navController.navigate("edit_profile") },
                     modifier = Modifier
@@ -166,7 +152,6 @@ fun YouScreen(
 
                 Spacer(Modifier.height(24.dp))
 
-                // -------- FAVORITES SECTION ----------
                 ProfileCoursesSection(
                     title = "Liked Courses",
                     icon = Icons.Default.Favorite,
@@ -177,7 +162,6 @@ fun YouScreen(
 
                 Spacer(Modifier.height(20.dp))
 
-                // -------- WATCHLIST SECTION ----------
                 ProfileCoursesSection(
                     title = "Watch Later",
                     icon = Icons.Default.WatchLater,
@@ -198,17 +182,14 @@ fun YouScreen(
 
                 Spacer(Modifier.height(20.dp))
 
-                // STATS SECTION
                 ProfileStatsSection(
                     favoriteCount = favoriteCourses.size,
                     watchLaterCount = watchLaterCourses.size,
-                    doneCount = doneCourses.size // أضف هذا
-
+                    doneCount = doneCourses.size
                 )
 
                 Spacer(Modifier.height(20.dp))
 
-                // LOGOUT BUTTON
                 Button(
                     onClick = {
                         userViewModel.logout()
@@ -228,9 +209,10 @@ fun YouScreen(
                         color = Color.White,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
-                    )                }
-                Spacer(Modifier.height(40.dp))
+                    )
+                }
 
+                Spacer(Modifier.height(40.dp))
             }
         }
     }
@@ -244,30 +226,21 @@ fun ProfileCoursesSection(
     navController: NavController,
     emptyMessage: String = "No courses found"
 ) {
-
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
-
         Column(modifier = Modifier.padding(16.dp)) {
-
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    icon,
-                    contentDescription = null,
-                    tint = PrimaryColor
-                )
+                Icon(icon, contentDescription = null, tint = PrimaryColor)
                 Spacer(Modifier.width(8.dp))
                 Text(
                     text = title,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleMedium
                 )
-
-                // إضافة عداد الكورسات
                 Spacer(Modifier.width(8.dp))
                 Text(
                     text = "(${courses.size})",
@@ -299,8 +272,8 @@ fun ProfileCoursesSection(
                     items(courses, key = { it.id }) { course ->
                         CourseCard(
                             course = course,
-                            cardWeight = 160,
-                            cardHeight = 200,
+                            cardWeight = 245,
+                            cardHeight = 300,
                             onCourseClick = { selectedCourse ->
                                 navController.navigate("courseDetails/${selectedCourse.id}")
                             }
@@ -315,9 +288,8 @@ fun ProfileCoursesSection(
 @Composable
 fun ProfileStatsSection(
     favoriteCount: Int,
-    watchLaterCount: Int ,
+    watchLaterCount: Int,
     doneCount: Int
-
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -367,8 +339,6 @@ fun ProfileStatsSection(
         }
     }
 }
-
-
 
 @Composable
 fun StatItem(

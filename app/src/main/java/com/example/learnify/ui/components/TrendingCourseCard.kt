@@ -1,16 +1,12 @@
 package com.example.learnify.ui.components
 
-import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -38,10 +34,10 @@ import com.example.learnify.data.local.CourseEntity
 fun TrendingCourseCard(
     course: CourseEntity,
     onCourseClick: (CourseEntity) -> Unit
-)
-{
+) {
     var pressed by remember { mutableStateOf(false) }
     val scale by animateFloatAsState(if (pressed) 0.95f else 1f)
+
     Card(
         modifier = Modifier
             .width(330.dp)
@@ -55,14 +51,12 @@ fun TrendingCourseCard(
                         tryAwaitRelease()
                         pressed = false
                     },
-                    onTap = {
-                        onCourseClick(course)
-                    }
+                    onTap = { onCourseClick(course) }
                 )
             },
         shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
-    ){
+    ) {
         Box(modifier = Modifier.fillMaxSize()) {
             SubcomposeAsyncImage(
                 model = course.imageUrl,
@@ -79,7 +73,8 @@ fun TrendingCourseCard(
                         .graphicsLayer {
                             scaleY = 1.35f
                             translationY = -6f
-                        })
+                        }
+                )
             }
 
             Box(
@@ -97,7 +92,6 @@ fun TrendingCourseCard(
                         )
                     )
             )
-
 
             Column(
                 modifier = Modifier
@@ -118,7 +112,6 @@ fun TrendingCourseCard(
                     )
                 )
 
-
                 Text(
                     text = "By ${course.channelTitle}",
                     fontSize = 10.sp,
@@ -128,9 +121,9 @@ fun TrendingCourseCard(
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-//                Row {
+//                              Row {
 //                    val rating = course.rating ?: 4f
-//                    Log.d("CourseRating", "Course ${course.details.courseTitle} -> $rating")
+//                    Log.d("CourseRating", "Course ${course.title} -> $rating")
 //
 //                    repeat(5) { index ->
 //                        val tint =
@@ -139,7 +132,7 @@ fun TrendingCourseCard(
 //                            imageVector = Icons.Default.Star,
 //                            contentDescription = null,
 //                            tint = tint,
-//                            modifier = Modifier.size(14.dp)
+//                            modifier = Modifier.size(16.dp)
 //                        )
 //                    }
 //                }

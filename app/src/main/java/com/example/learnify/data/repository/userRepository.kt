@@ -12,15 +12,12 @@ class UserRepository {
     private val auth = FirebaseAuth.getInstance()
     private val users = FirebaseFirestore.getInstance().collection("users")
 
-    // --------------------------- AUTH ---------------------------
     suspend fun registerUser(name: String, email: String, phone: String, password: String): Boolean {
         return try {
             val result = auth.createUserWithEmailAndPassword(email, password).await()
             val uid = result.user?.uid ?: return false
-
             val user = User(uid, name, email, phone, "")
             users.document(uid).set(user).await()
-
             true
         } catch (e: Exception) {
             throw e
@@ -40,7 +37,6 @@ class UserRepository {
     fun getCurrentUser() = auth.currentUser
     fun logout() = auth.signOut()
 
-    // --------------------------- USER DATA ---------------------------
     suspend fun getUserData(userId: String): Map<String, Any>? {
         val snap = users.document(userId).get().await()
         return snap.data
@@ -50,7 +46,6 @@ class UserRepository {
         val uid = auth.currentUser?.uid ?: return
         users.document(uid).update(mapOf("name" to name, "phone" to phone)).await()
     }
-
 
     suspend fun updateUserInfo(updates: Map<String, Any>) {
         val uid = auth.currentUser?.uid ?: return
@@ -73,8 +68,6 @@ class UserRepository {
         }
     }
 
-    // --------------------------- FAVORITES & WATCHLIST & DONE COURSES ---------------------------
-
     suspend fun addToFavorites(courseId: String) {
         val uid = auth.currentUser?.uid ?: return
         users.document(uid).update("favorites", FieldValue.arrayUnion(courseId)).await()
@@ -90,11 +83,11 @@ class UserRepository {
         users.document(uid).update("watchlist", FieldValue.arrayUnion(courseId)).await()
     }
 
-
     suspend fun removeFromWatchlist(courseId: String) {
         val uid = auth.currentUser?.uid ?: return
         users.document(uid).update("watchlist", FieldValue.arrayRemove(courseId)).await()
     }
+
     suspend fun addToDoneCourses(courseId: String) {
         val uid = auth.currentUser?.uid ?: return
         users.document(uid).update("doneCourses", FieldValue.arrayUnion(courseId)).await()
@@ -111,7 +104,6 @@ class UserRepository {
         return snap.get("favorites") as? List<String> ?: emptyList()
     }
 
-
     suspend fun getCurrentUserWatchlist(): List<String> {
         val uid = auth.currentUser?.uid ?: return emptyList()
         val snap = users.document(uid).get().await()
@@ -124,23 +116,15 @@ class UserRepository {
         return snap.get("doneCourses") as? List<String> ?: emptyList()
     }
 
-
-     // مزامنة المفضلة بين Firebase و Room
-
     suspend fun syncFavoritesWithRoom(roomFavorites: List<String>) {
         val uid = auth.currentUser?.uid ?: return
         users.document(uid).update("favorites", roomFavorites).await()
     }
 
-
-     //  مزامنة قائمة المشاهدة بين Firebase و Room
-
     suspend fun syncWatchlistWithRoom(roomWatchlist: List<String>) {
         val uid = auth.currentUser?.uid ?: return
         users.document(uid).update("watchlist", roomWatchlist).await()
     }
-
-     // مزامنة الكورسات المكتملة بين Firebase و Room
 
     suspend fun syncDoneCoursesWithRoom(roomDoneCourses: List<String>) {
         val uid = auth.currentUser?.uid ?: return
@@ -159,7 +143,6 @@ class UserRepository {
     suspend fun removeFromFavorites(userId: String, courseId: String) =
         users.document(userId).update("favorites", FieldValue.arrayRemove(courseId)).await()
 
-    // --------------------------- REALTIME LISTENER ---------------------------
     fun listenToUserRealtime(userId: String, onChange: (Map<String, Any>?) -> Unit) {
         users.document(userId).addSnapshotListener { snap, error ->
             if (error != null) onChange(null)

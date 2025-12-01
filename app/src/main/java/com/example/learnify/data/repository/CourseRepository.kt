@@ -12,15 +12,12 @@ import kotlin.math.log10
 
 class CourseRepository(private val dao: CourseDao) {
 
-    private val apiKey = "Your api key"
+    private val apiKey = "AIzaSyD_Nntb2yllML53TAqll67lTzZaJNKFe3w"
 
-    // Returns LiveData of trending courses for a specific category
     fun getTrendingLive(category: String): LiveData<List<CourseEntity>> =
         dao.getTrendingByCategory(category)
 
-    // Save trending courses to DB for a specific category
     suspend fun saveTrending(list: List<ChannelCourse>, channelId: String) {
-        //  نجيب البيانات الحالية من الداتابيز عشان نحفظ حالة المفضلة
         val existingCourses = dao.getCoursesList(true).associateBy { it.id }
 
         dao.clearTrendingForCategory(channelId)
@@ -30,21 +27,17 @@ class CourseRepository(private val dao: CourseDao) {
                 channelCourse.toEntity(
                     isTrending = true,
                     category = channelId,
-                    isFavorite = existingCourse?.isFavorite ?: false, // نحفظ الحالة القديمة
-                    isWatchLater = existingCourse?.isWatchLater ?: false , // نحفظ الحالة القديمة
+                    isFavorite = existingCourse?.isFavorite ?: false,
+                    isWatchLater = existingCourse?.isWatchLater ?: false,
                     isDone = existingCourse?.isDone ?: false
-
                 )
             }
         )
     }
 
-    // Load trending courses from DB synchronously
-    suspend fun loadTrendingFromDB(): List<ChannelCourse> {
-        return dao.getCoursesList(true).map { it.toChannelCourse() }
-    }
+    suspend fun loadTrendingFromDB(): List<ChannelCourse> =
+        dao.getCoursesList(true).map { it.toChannelCourse() }
 
-    // Search courses from API, save in DB under given category, return saved entities
     suspend fun searchAndSave(query: String, categoryKey: String): List<CourseEntity> {
         return try {
             val playlists = withContext(Dispatchers.IO) {
@@ -55,7 +48,6 @@ class CourseRepository(private val dao: CourseDao) {
                 playlist.copy(rating = calculateRatingForPlaylist(playlist.playlistId.playlistId))
             }
 
-            //  نحفظ حالة المفضلة والواتش ليتير و المكتملة
             val existingCourses = dao.getCoursesList(false).associateBy { it.id }
 
             val entities = courses.map { searchCourse ->
@@ -63,10 +55,9 @@ class CourseRepository(private val dao: CourseDao) {
                 searchCourse.toEntity(
                     isTrending = false,
                     category = categoryKey,
-                    isFavorite = existingCourse?.isFavorite ?: false, // نحفظ الحالة القديمة
-                    isWatchLater = existingCourse?.isWatchLater ?: false, // نحفظ الحالة القديمة
+                    isFavorite = existingCourse?.isFavorite ?: false,
+                    isWatchLater = existingCourse?.isWatchLater ?: false,
                     isDone = existingCourse?.isDone ?: false
-
                 )
             }
 
@@ -75,14 +66,12 @@ class CourseRepository(private val dao: CourseDao) {
 
             entities
         } catch (e: Exception) {
-            // Fallback to DB if API fails
             dao.getCoursesListByCategory(categoryKey).ifEmpty {
                 dao.getCoursesList(false)
             }
         }
     }
 
-    // Direct search without saving to DB
     suspend fun searchDirect(query: String): List<SearchCourse> {
         return try {
             val playlists = withContext(Dispatchers.IO) {
@@ -96,7 +85,6 @@ class CourseRepository(private val dao: CourseDao) {
         }
     }
 
-    // Fetch trending courses from API only (no DB save)
     suspend fun getTrendingFromAPI(channelId: String): List<ChannelCourse> {
         return try {
             withContext(Dispatchers.IO) {
@@ -107,11 +95,9 @@ class CourseRepository(private val dao: CourseDao) {
         }
     }
 
-    //  إدخال أو تحديث كورس مع الحفاظ على الحالة
     suspend fun insertOrUpdateCourse(course: CourseEntity) {
         val existingCourse = dao.getCourseByIdDirect(course.id)
         if (existingCourse != null) {
-            // إذا الكورس موجود، نحدثه مع الحفاظ على حالة المفضلة والواتش ليتير و المكتملة
             val updatedCourse = course.copy(
                 isFavorite = existingCourse.isFavorite,
                 isWatchLater = existingCourse.isWatchLater,
@@ -119,18 +105,15 @@ class CourseRepository(private val dao: CourseDao) {
             )
             dao.insertCourses(listOf(updatedCourse))
         } else {
-            // إذا الكورس جديد، نضيفه
             dao.insertCourses(listOf(course))
         }
     }
 
     fun getCourseById(id: String): LiveData<CourseEntity> = dao.getCourseById(id)
 
-    suspend fun getCourseByIdDirect(id: String): CourseEntity? {
-        return dao.getCourseByIdDirect(id)
-    }
+    suspend fun getCourseByIdDirect(id: String): CourseEntity? =
+        dao.getCourseByIdDirect(id)
 
-    // Calculate a rating for a playlist based on views and likes
     private suspend fun calculateRatingForPlaylist(playlistId: String): Float? {
         return try {
             val playlistItems = RetrofitInstance.api.getPlaylistItems(
@@ -163,26 +146,17 @@ class CourseRepository(private val dao: CourseDao) {
         }
     }
 
-    suspend fun toggleFavorite(courseId: String, value: Boolean) {
-        dao.setFavorite(courseId, value)
-    }
-
-    suspend fun toggleWatchLater(courseId: String, value: Boolean) {
-        dao.setWatchLater(courseId, value)
-    }
-    suspend fun toggleDone(courseId: String, value: Boolean) {
-        dao.setDone(courseId, value)
-    }
-
+    suspend fun toggleFavorite(courseId: String, value: Boolean) = dao.setFavorite(courseId, value)
+    suspend fun toggleWatchLater(courseId: String, value: Boolean) = dao.setWatchLater(courseId, value)
+    suspend fun toggleDone(courseId: String, value: Boolean) = dao.setDone(courseId, value)
 }
 
-// Extensions to convert SearchCourse/ChannelCourse -> CourseEntity with category
 fun SearchCourse.toEntity(
     isTrending: Boolean,
     category: String,
     isFavorite: Boolean = false,
     isWatchLater: Boolean = false,
-    isDone: Boolean = false // أضف هذا
+    isDone: Boolean = false
 ): CourseEntity =
     CourseEntity(
         id = this.playlistId.playlistId,
@@ -221,7 +195,6 @@ fun ChannelCourse.toEntity(
         isDone = isDone
     )
 
-// Converters back (if needed)
 fun CourseEntity.toSearchCourse() = com.example.learnify.data.model.SearchCourse(
     details = com.example.learnify.data.model.PlaylistSnippet(
         courseTitle = this.title,

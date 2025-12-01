@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,9 +20,9 @@ import com.example.learnify.ui.theme.PrimaryColor
 
 @Composable
 fun LearnifyHeader(
-    modifier: Modifier = Modifier, onSearch: (String) -> Unit = {}
+    modifier: Modifier = Modifier,
+    onSearch: (String) -> Unit = {}
 ) {
-
     Surface(
         color = Color.Transparent,
         modifier = modifier
@@ -54,7 +54,6 @@ fun LearnifyHeader(
                     fontWeight = FontWeight.Bold,
                     color = PrimaryColor,
                     fontFamily = FontFamily(Font(R.font.playwrite))
-
                 )
             }
 

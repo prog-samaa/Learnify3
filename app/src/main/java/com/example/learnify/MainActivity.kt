@@ -6,8 +6,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -21,12 +26,8 @@ import com.example.learnify.ui.CourseViewModel
 import com.example.learnify.ui.components.BottomNavigation
 import com.example.learnify.ui.theme.AppBackgroundColor
 import com.example.learnify.viewmodel.UserViewModel
-import com.example.learnify.ui.TimerViewModel
-import com.example.learnify.ui.screens.PomodoroScreen
+import com.example.learnify.ui.PomodoroViewModel
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.launch
-import com.example.learnify.ui.screens.ToDoScreen
-
 
 class MainActivity : ComponentActivity() {
 
@@ -41,12 +42,10 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 var selected by remember { mutableStateOf<String?>(null) }
 
-                // ViewModels
                 val userViewModel: UserViewModel = viewModel()
                 val courseViewModel: CourseViewModel = viewModel()
-                val timerViewModel: TimerViewModel = viewModel()
+                val timerViewModel: PomodoroViewModel = viewModel()
 
-                // إضافة LaunchedEffect لتحميل المفضلة عند بداية التطبيق
                 LaunchedEffect(Unit) {
                     courseViewModel.initializeFavorites()
                 }
@@ -67,7 +66,8 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(AppBackgroundColor),
+                        .background(AppBackgroundColor)
+                        .windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Bottom)),
                     bottomBar = {
                         if (showBottomBar) {
                             BottomNavigation(
@@ -83,7 +83,6 @@ class MainActivity : ComponentActivity() {
                         startDestination = if (currentUser == null) "login" else "home",
                         modifier = Modifier.padding(innerPadding)
                     ) {
-
                         composable("login") { LoginScreen(navController, userViewModel) }
                         composable("signup") { SignUpScreen(navController, userViewModel) }
                         composable("forgot") { ForgotPasswordScreen(navController, userViewModel) }
@@ -106,7 +105,7 @@ class MainActivity : ComponentActivity() {
 
                         composable("todo") {
                             val todoViewModel: ToDoViewModel = viewModel()
-                            ToDoScreen(todoViewModel)
+                            ToDoScreen(todoViewModel, navController)
                         }
 
                         composable("you") {

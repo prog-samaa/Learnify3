@@ -11,9 +11,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-class TimerViewModel : ViewModel() {
+class PomodoroViewModel : ViewModel() {
 
     var timeLeft by mutableStateOf(25 * 60)
+        private set
+
+    var totalTime by mutableStateOf(25 * 60)
         private set
 
     var isRunning by mutableStateOf(false)
@@ -44,17 +47,20 @@ class TimerViewModel : ViewModel() {
     fun resetTimer() {
         pauseTimer()
         timeLeft = if (isBreakTime) 5 * 60 else 25 * 60
+        totalTime = timeLeft
     }
 
     fun startWork() {
         pauseTimer()
         isBreakTime = false
         timeLeft = 25 * 60
+        totalTime = timeLeft
     }
 
     fun startBreak() {
         pauseTimer()
         isBreakTime = true
         timeLeft = 5 * 60
+        totalTime = timeLeft
     }
 }

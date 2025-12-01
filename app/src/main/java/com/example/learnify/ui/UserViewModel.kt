@@ -52,30 +52,17 @@ class UserViewModel : ViewModel() {
         }
     }
 
-
-//    fun login(email: String, password: String) {
-//        viewModelScope.launch {
-//            try {
-//                repo.loginUser(email, password)
-//                isLoggedIn.value = true
-//                observeCurrentUser()
-//            } catch (e: Exception) {
-//                errorMessage.value = e.message ?: "Login failed"
-//            }
-//        }
-//    }
-fun login(email: String, password: String) {
-    viewModelScope.launch {
-        try {
-            val success = repo.loginUser(email, password)
-            isLoggedIn.value = success
-            if (success) observeCurrentUser()
-        } catch (e: Exception) {
-            errorMessage.value = e.message ?: "Login failed"
+    fun login(email: String, password: String) {
+        viewModelScope.launch {
+            try {
+                val success = repo.loginUser(email, password)
+                isLoggedIn.value = success
+                if (success) observeCurrentUser()
+            } catch (e: Exception) {
+                errorMessage.value = e.message ?: "Login failed"
+            }
         }
     }
-}
-
 
     fun resetPassword(email: String) { repo.resetPassword(email) }
 
@@ -87,26 +74,13 @@ fun login(email: String, password: String) {
         }
     }
 
-    //  التحقق من شروط الباسوورد الجديد
     fun validateNewPassword(password: String): ValidationResult {
         return when {
-            password.length < 6 -> ValidationResult(
-                isValid = false,
-                message = "Password must be at least 6 characters long"
-            )
-            !password.any { it.isDigit() } -> ValidationResult(
-                isValid = false,
-                message = "Password must contain at least one number"
-            )
-            !password.any { it.isLetter() } -> ValidationResult(
-                isValid = false,
-                message = "Password must contain at least one letter"
-            )
-            !password.any { !it.isLetterOrDigit() } -> ValidationResult(
-                isValid = false,
-                message = "Password must contain at least one special character"
-            )
-            else -> ValidationResult(isValid = true, message = "Password is valid")
+            password.length < 6 -> ValidationResult(false, "Password must be at least 6 characters long")
+            !password.any { it.isDigit() } -> ValidationResult(false, "Password must contain at least one number")
+            !password.any { it.isLetter() } -> ValidationResult(false, "Password must contain at least one letter")
+            !password.any { !it.isLetterOrDigit() } -> ValidationResult(false, "Password must contain at least one special character")
+            else -> ValidationResult(true, "Password is valid")
         }
     }
 
@@ -130,7 +104,6 @@ fun login(email: String, password: String) {
         }
     }
 
-
     fun updateProfile(
         name: String,
         phone: String,
@@ -140,20 +113,15 @@ fun login(email: String, password: String) {
     ) {
         viewModelScope.launch {
             try {
-                // تحديث الاسم و الهاتف
                 updateNameAndPhone(name, phone)
-
-                // تحديث الباسورد
                 if (!newPassword.isNullOrEmpty() && !currentPassword.isNullOrEmpty()) {
                     changePassword(currentPassword, newPassword)
                 }
-
-                // بعد كل التحديثات
                 onDone()
             } catch (e: Exception) { errorMessage.value = e.message }
         }
     }
-    // ---------- FAVORITES OPERATIONS ----------
+
     fun addToFavorites(courseId: String) {
         viewModelScope.launch {
             try {
@@ -163,9 +131,7 @@ fun login(email: String, password: String) {
                     repo.updateUserInfo(updates = mapOf("favorites" to updatedFavorites))
                 }
                 repo.addToFavorites(courseId)
-            } catch (e: Exception) {
-                errorMessage.value = "Failed to add to favorites"
-            }
+            } catch (e: Exception) { errorMessage.value = "Failed to add to favorites" }
         }
     }
 
@@ -176,13 +142,10 @@ fun login(email: String, password: String) {
                 val updatedFavorites = currentFavorites.filter { it != courseId }
                 repo.updateUserInfo(updates = mapOf("favorites" to updatedFavorites))
                 repo.removeFromFavorites(courseId)
-            } catch (e: Exception) {
-                errorMessage.value = "Failed to remove from favorites"
-            }
+            } catch (e: Exception) { errorMessage.value = "Failed to remove from favorites" }
         }
     }
 
-    // ---------- WATCHLIST OPERATIONS ----------
     fun addToWatchlist(courseId: String) {
         viewModelScope.launch {
             try {
@@ -192,9 +155,7 @@ fun login(email: String, password: String) {
                     repo.updateUserInfo(updates = mapOf("watchlist" to updatedWatchlist))
                 }
                 repo.addToWatchlist(courseId)
-            } catch (e: Exception) {
-                errorMessage.value = "Failed to add to watchlist"
-            }
+            } catch (e: Exception) { errorMessage.value = "Failed to add to watchlist" }
         }
     }
 
@@ -205,13 +166,10 @@ fun login(email: String, password: String) {
                 val updatedWatchlist = currentWatchlist.filter { it != courseId }
                 repo.updateUserInfo(updates = mapOf("watchlist" to updatedWatchlist))
                 repo.removeFromWatchlist(courseId)
-            } catch (e: Exception) {
-                errorMessage.value = "Failed to remove from watchlist"
-            }
+            } catch (e: Exception) { errorMessage.value = "Failed to remove from watchlist" }
         }
     }
 
-    // ---------- DONE COURSES OPERATIONS ----------
     fun addToDoneCourses(courseId: String) {
         viewModelScope.launch {
             try {
@@ -221,9 +179,7 @@ fun login(email: String, password: String) {
                     repo.updateUserInfo(updates = mapOf("doneCourses" to updatedDoneCourses))
                 }
                 repo.addToDoneCourses(courseId)
-            } catch (e: Exception) {
-                errorMessage.value = "Failed to mark course as completed"
-            }
+            } catch (e: Exception) { errorMessage.value = "Failed to mark course as completed" }
         }
     }
 
@@ -234,44 +190,31 @@ fun login(email: String, password: String) {
                 val updatedDoneCourses = currentDoneCourses.filter { it != courseId }
                 repo.updateUserInfo(updates = mapOf("doneCourses" to updatedDoneCourses))
                 repo.removeFromDoneCourses(courseId)
-            } catch (e: Exception) {
-                errorMessage.value = "Failed to remove from completed courses"
-            }
+            } catch (e: Exception) { errorMessage.value = "Failed to remove from completed courses" }
         }
     }
 
-    // مزامنة Done Courses مع Room
     fun syncDoneCoursesWithRoom(roomDoneCourses: List<String>) {
         viewModelScope.launch {
-            try {
-                repo.syncDoneCoursesWithRoom(roomDoneCourses)
-            } catch (e: Exception) {
-                errorMessage.value = "Failed to sync completed courses"
-            }
+            try { repo.syncDoneCoursesWithRoom(roomDoneCourses) }
+            catch (e: Exception) { errorMessage.value = "Failed to sync completed courses" }
         }
     }
 
-    // مزامنة Favorites مع Room
     fun syncFavoritesWithRoom(roomFavorites: List<String>) {
         viewModelScope.launch {
-            try {
-                repo.syncFavoritesWithRoom(roomFavorites)
-            } catch (e: Exception) {
-                errorMessage.value = "Failed to sync favorites"
-            }
+            try { repo.syncFavoritesWithRoom(roomFavorites) }
+            catch (e: Exception) { errorMessage.value = "Failed to sync favorites" }
         }
     }
 
-    // مزامنة Watchlist مع Room
     fun syncWatchlistWithRoom(roomWatchlist: List<String>) {
         viewModelScope.launch {
-            try {
-                repo.syncWatchlistWithRoom(roomWatchlist)
-            } catch (e: Exception) {
-                errorMessage.value = "Failed to sync watchlist"
-            }
+            try { repo.syncWatchlistWithRoom(roomWatchlist) }
+            catch (e: Exception) { errorMessage.value = "Failed to sync watchlist" }
         }
     }
+
     fun logout() {
         repo.logout()
         isLoggedIn.value = false
@@ -279,7 +222,6 @@ fun login(email: String, password: String) {
     }
 }
 
-// data class لنتيجة التحقق من الباسوورد
 data class ValidationResult(
     val isValid: Boolean,
     val message: String

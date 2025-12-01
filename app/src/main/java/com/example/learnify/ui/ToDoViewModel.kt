@@ -1,36 +1,52 @@
 package com.example.learnify.ui.screens
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.learnify.data.local.TaskDatabase
+import com.example.learnify.data.local.TaskEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-data class Task(
-    val id: Int,
-    val text: String,
-    val isDone: Boolean = false
-)
+class ToDoViewModel(application: Application) : AndroidViewModel(application) {
 
-class ToDoViewModel : ViewModel() {
+    private val taskDao = TaskDatabase.getDatabase(application).taskDao()
 
-    private val _tasks = MutableStateFlow<List<Task>>(emptyList())
-    val tasks: StateFlow<List<Task>> = _tasks
+    private val _tasks = MutableStateFlow<List<TaskEntity>>(emptyList())
+    val tasks: StateFlow<List<TaskEntity>> = _tasks
 
-    private var currentId = 0
-
-    fun addTask(text: String) {
-        if (text.isBlank()) return
-        val newTask = Task(id = currentId++, text = text)
-        _tasks.update { it + newTask }
-    }
-
-    fun toggleDone(task: Task, done: Boolean) {
-        _tasks.update { list ->
-            list.map { if (it.id == task.id) it.copy(isDone = done) else it }
+    init {
+        viewModelScope.launch {
+            taskDao.getAllTasks().observeForever { list ->
+                _tasks.value = list
+            }
         }
     }
 
-    fun deleteTask(task: Task) {
-        _tasks.update { list -> list.filter { it.id != task.id } }
+    fun addTask(text: String) {
+        if (text.isBlank()) return
+        val newTask = TaskEntity(text = text)
+        viewModelScope.launch {
+            taskDao.insertTask(newTask)
+        }
+    }
+
+    fun toggleDone(task: TaskEntity, done: Boolean) {
+        viewModelScope.launch {
+            taskDao.updateTask(task.copy(isDone = done))
+        }
+    }
+
+    fun deleteTask(task: TaskEntity) {
+        viewModelScope.launch {
+            taskDao.deleteTask(task)
+        }
+    }
+
+    fun clearAllTasks() {
+        viewModelScope.launch {
+            taskDao.clearAllTasks()
+        }
     }
 }

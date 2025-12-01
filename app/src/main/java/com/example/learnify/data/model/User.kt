@@ -9,5 +9,4 @@ data class User(
     val watchlist: List<String> = emptyList(),
     val favorites: List<String> = emptyList(),
     val doneCourses: List<String> = emptyList()
-
 )

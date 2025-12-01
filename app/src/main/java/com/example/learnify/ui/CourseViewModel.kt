@@ -15,11 +15,9 @@ class CourseViewModel(application: Application) : AndroidViewModel(application) 
     private val dao = CourseDatabase.getDatabase(application).courseDao()
     private val repository = CourseRepository(dao)
 
-    // StateFlow  لحل مشكلة تحديث الـ
     private val _currentCourse = MutableStateFlow<CourseEntity?>(null)
     val currentCourse: StateFlow<CourseEntity?> = _currentCourse.asStateFlow()
 
-    // دالة لتحميل الكورس الحالي
     fun loadCourse(courseId: String) {
         viewModelScope.launch {
             val course = dao.getCourseByIdDirect(courseId)
@@ -27,14 +25,11 @@ class CourseViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    //  تحميل المفضلة عند بداية التطبيق
     fun initializeFavorites() {
         viewModelScope.launch {
-            // تفعيل الـ Observers للتأكد من تحميل البيانات
             favoriteCourses.value
             watchLaterCourses.value
             doneCourses.value
-
         }
     }
 
@@ -51,7 +46,6 @@ class CourseViewModel(application: Application) : AndroidViewModel(application) 
     private val _searchResults = MutableLiveData<List<CourseEntity>>()
     val searchResults: LiveData<List<CourseEntity>> = _searchResults
 
-    // Loading states
     private val _isTrendingLoading = MutableLiveData(false)
     val isTrendingLoading: LiveData<Boolean> = _isTrendingLoading
 
@@ -61,7 +55,6 @@ class CourseViewModel(application: Application) : AndroidViewModel(application) 
     private val _isGeneralLoading = MutableLiveData(false)
     val isGeneralLoading: LiveData<Boolean> = _isGeneralLoading
 
-    // Error states
     private val _trendingError = MutableLiveData<String?>(null)
     val trendingError: LiveData<String?> = _trendingError
 
@@ -71,21 +64,18 @@ class CourseViewModel(application: Application) : AndroidViewModel(application) 
     private val _generalError = MutableLiveData<String?>(null)
     val generalError: LiveData<String?> = _generalError
 
-    // caches
     private val loadedSearchQueries = mutableSetOf<String>()
     private val loadedCategories = mutableSetOf<String>()
     private val loadedTrending = mutableSetOf<String>()
 
     fun getCoursesByIds(ids: List<String>): LiveData<List<CourseEntity>> {
         val result = MutableLiveData<List<CourseEntity>>()
-
         viewModelScope.launch {
             val list = ids.mapNotNull { id ->
                 dao.getCourseByIdDirect(id)
             }
             result.postValue(list)
         }
-
         return result
     }
 
@@ -93,7 +83,6 @@ class CourseViewModel(application: Application) : AndroidViewModel(application) 
         return repository.getCourseById(id)
     }
 
-    // detect category
     fun detectCategoryKeyFromQuery(query: String): String {
         val q = query.lowercase()
         return when {
@@ -113,12 +102,8 @@ class CourseViewModel(application: Application) : AndroidViewModel(application) 
             _isSearchLoading.value = true
             try {
                 val result = repository.searchDirect(query)
-
                 _searchResults.value = result.map {
-                    it.toEntity(
-                        isTrending = false,
-                        category = "search"   // temporary
-                    )
+                    it.toEntity(isTrending = false, category = "search")
                 }
             } catch (e: Exception) {
                 _searchError.value = e.message
@@ -133,7 +118,6 @@ class CourseViewModel(application: Application) : AndroidViewModel(application) 
         if (q.isEmpty()) return
 
         val categoryKey = detectCategoryKeyFromQuery(q)
-
         val liveData = generalMap.getOrPut(categoryKey) { MutableLiveData(emptyList()) }
 
         if (loadedSearchQueries.contains(q)) {
@@ -149,7 +133,6 @@ class CourseViewModel(application: Application) : AndroidViewModel(application) 
             try {
                 val saved = repository.searchAndSave(q, categoryKey)
                 liveData.value = saved
-
                 loadedSearchQueries.add(q)
                 loadedCategories.add(categoryKey)
                 _generalError.value = null
@@ -164,18 +147,14 @@ class CourseViewModel(application: Application) : AndroidViewModel(application) 
     fun getTrendingCourses(category: String) {
         val id = category.trim()
         if (id.isEmpty()) return
-
         if (loadedTrending.contains(id)) return
 
         viewModelScope.launch {
             _isTrendingLoading.value = true
             try {
                 val api = repository.getTrendingFromAPI(id)
-                if (api.isNotEmpty())
-                    repository.saveTrending(api, id)
-
+                if (api.isNotEmpty()) repository.saveTrending(api, id)
                 loadedTrending.add(id)
-
                 _trendingError.value = null
             } catch (e: Exception) {
                 _trendingError.value = e.message
@@ -214,7 +193,6 @@ class CourseViewModel(application: Application) : AndroidViewModel(application) 
             try {
                 val saved = repository.searchAndSave(q, categoryKey)
                 liveData.value = saved
-
                 loadedSearchQueries.add(q)
                 _generalError.value = null
             } catch (e: Exception) {
@@ -238,11 +216,9 @@ class CourseViewModel(application: Application) : AndroidViewModel(application) 
     fun toggleFavorite(courseId: String, value: Boolean) {
         viewModelScope.launch {
             val currentCourse = dao.getCourseByIdDirect(courseId)
-
             dao.setFavorite(courseId, value)
             loadCourse(courseId)
-            if (currentCourse == null) {
-            }
+            if (currentCourse == null) { }
         }
     }
 
@@ -251,11 +227,10 @@ class CourseViewModel(application: Application) : AndroidViewModel(application) 
             val currentCourse = dao.getCourseByIdDirect(courseId)
             dao.setWatchLater(courseId, value)
             loadCourse(courseId)
-
-            if (currentCourse == null) {
-            }
+            if (currentCourse == null) { }
         }
     }
+
     fun toggleDone(courseId: String, value: Boolean) {
         viewModelScope.launch {
             dao.setDone(courseId, value)
@@ -263,7 +238,6 @@ class CourseViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    //  التحقق من حالة الكورس
     suspend fun getCourseState(courseId: String): Pair<Boolean, Boolean> {
         val course = dao.getCourseByIdDirect(courseId)
         return Pair(course?.isFavorite ?: false, course?.isWatchLater ?: false)

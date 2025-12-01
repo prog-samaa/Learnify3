@@ -33,7 +33,6 @@ import com.example.learnify.ui.theme.BarBackground
 import com.example.learnify.ui.theme.PrimaryColor
 import com.example.learnify.ui.theme.SecondaryColor
 import com.example.learnify.ui.theme.gray
-import kotlin.collections.forEach
 
 @Composable
 fun BottomNavigation(
@@ -42,7 +41,6 @@ fun BottomNavigation(
     modifier: Modifier = Modifier,
     items: List<BottomNavItem> = defaultBottomItems()
 ) {
-
     Surface(
         color = BarBackground,
         modifier = modifier.fillMaxWidth(),
@@ -60,7 +58,6 @@ fun BottomNavigation(
         ) {
             items.forEach { item ->
                 val selected = currentRoute == item.route
-
                 val backgroundColor by animateColorAsState(
                     targetValue = if (selected) PrimaryColor else Color.Transparent
                 )
@@ -72,10 +69,7 @@ fun BottomNavigation(
                         .wrapContentWidth()
                         .scale(scale)
                         .clickable {
-                            if (item.route == "home") {
-                                onHomeClicked()
-                            }
-
+                            if (item.route == "home") onHomeClicked()
                             if (!selected) {
                                 navController.navigate(item.route) {
                                     popUpTo(navController.graph.startDestinationId) {

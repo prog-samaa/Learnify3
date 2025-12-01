@@ -16,7 +16,6 @@ data class ThumbnailDetail(
 
 data class PlaylistThumbnails(
     @Json(name = "high") val thumbnail: ThumbnailDetail
-
 )
 
 data class PlaylistSnippet(
@@ -42,7 +41,6 @@ data class ChannelCourse(
     @Json(name = "id") val id: String,
     var rating: Float? = null
 )
-
 
 data class PlaylistItemsResponse(
     @Json(name = "items") val items: List<PlaylistVideoItem>

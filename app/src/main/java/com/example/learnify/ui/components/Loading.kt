@@ -16,11 +16,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.learnify.ui.theme.PrimaryColor
+
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun Loading() {
     Box(
-        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -35,5 +37,4 @@ fun Loading() {
             Text("Loading courses...")
         }
     }
-
 }

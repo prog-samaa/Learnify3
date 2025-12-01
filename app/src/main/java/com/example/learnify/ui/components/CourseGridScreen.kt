@@ -9,39 +9,33 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.learnify.ui.CourseViewModel
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.navigation.NavHostController
+import com.example.learnify.ui.CourseViewModel
 
 @Composable
 fun CourseGridScreen(
     cardWeight: Int = 245,
     cardHeight: Int = 300,
     query: String,
-    isSearch :Boolean = false,
+    isSearch: Boolean = false,
     viewModel: CourseViewModel = viewModel(),
     navController: NavHostController
 ) {
     val categoryKey = viewModel.detectCategoryKeyFromQuery(query)
 
-    val courses by if(isSearch) viewModel.searchResults.observeAsState(emptyList())
+    val courses by if (isSearch) viewModel.searchResults.observeAsState(emptyList())
     else viewModel.generalCoursesByCategory(categoryKey).observeAsState(emptyList())
 
     val isSearchLoading by viewModel.isSearchLoading.observeAsState(false)
     val isGeneralLoading by viewModel.isGeneralLoading.observeAsState(false)
 
-    val isLoading = when {
-        isSearch -> isSearchLoading
-        else -> isGeneralLoading
-    }
+    val isLoading = if (isSearch) isSearchLoading else isGeneralLoading
 
     val searchError by viewModel.searchError.observeAsState(null)
     val generalError by viewModel.generalError.observeAsState(null)
 
-    val error = when {
-        isSearch -> searchError
-        else -> generalError
-    }
+    val error = if (isSearch) searchError else generalError
 
     LaunchedEffect(query) {
         when {
@@ -65,7 +59,8 @@ fun CourseGridScreen(
                     .height(gridHeight.dp)
             ) {
                 items(courses) { course ->
-                    CourseCard(course = course,
+                    CourseCard(
+                        course = course,
                         cardWeight = cardWeight,
                         cardHeight = cardHeight,
                         onCourseClick = { selectedCourse ->

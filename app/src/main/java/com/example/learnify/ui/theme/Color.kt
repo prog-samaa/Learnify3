@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 
 val PrimaryColor = Color(0xFF610001)
 val SecondaryColor = Color(0xFFFEF7F7)
-val CategoryScreenColor= Color(	0XFFcc8664)
+val Light_Brown= Color(	0XFFcc8664)
 val AppBackgroundColor = Color(0xFFfdfcf5)
 val BarBackground = Color(0xFFFEF8F8)
 

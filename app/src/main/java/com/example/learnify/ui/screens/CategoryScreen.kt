@@ -22,7 +22,7 @@ import com.example.learnify.ui.components.CourseGridScreen
 import com.example.learnify.ui.components.CourseRowScreen
 import com.example.learnify.ui.components.LearnifySearchBar
 import com.example.learnify.ui.theme.PrimaryColor
-import com.example.learnify.ui.theme.CategoryScreenColor
+import com.example.learnify.ui.theme.Light_Brown
 
 @Composable
 fun CategoryScreen(
@@ -41,13 +41,12 @@ fun CategoryScreen(
                 .fillMaxWidth()
                 .height(260.dp)
                 .clip(RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
-                .background(CategoryScreenColor)
+                .background(Light_Brown)
                 .align(Alignment.TopCenter)
         )
 
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.Start
         ) {
@@ -70,8 +69,8 @@ fun CategoryScreen(
                             color = PrimaryColor,
                             modifier = Modifier.weight(1f),
                             fontFamily = FontFamily(Font(R.font.playwrite))
-
                         )
+
                         Image(
                             painter = painterResource(id = R.drawable.category_screen_icon),
                             contentDescription = null,
@@ -80,11 +79,15 @@ fun CategoryScreen(
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
+
                     LearnifySearchBar(
                         onSearch = { query ->
                             searchQuery = query
-                        })
-                    Spacer(Modifier.height(9.dp))
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.height(9.dp))
+
                     Row(modifier = Modifier.padding(start = 8.dp)) {
                         Text(
                             text = "Trending",
@@ -92,15 +95,7 @@ fun CategoryScreen(
                             fontWeight = FontWeight.Bold,
                             color = PrimaryColor,
                             fontFamily = FontFamily(Font(R.font.playwrite))
-
                         )
-//                        Image(
-//                            painter = painterResource(id = R.drawable.trending_icon),
-//                            contentDescription = "Trending Icon",
-//                            modifier = Modifier
-//                                .size(30.dp)
-//                                .padding(end = 10.dp)
-//                        )
                     }
                 }
             }
@@ -122,7 +117,6 @@ fun CategoryScreen(
                     navController = navController
                 )
             }
-
 
             item {
                 Spacer(modifier = Modifier.height(50.dp))

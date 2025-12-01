@@ -20,10 +20,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.learnify.ui.components.Loading
-import kotlinx.coroutines.launch
 import com.example.learnify.ui.theme.AppBackgroundColor
 import com.example.learnify.ui.theme.PrimaryColor
 import com.example.learnify.viewmodel.UserViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,7 +49,6 @@ fun EditProfileScreen(
     var passwordMatchError by remember { mutableStateOf("") }
     var passwordRequirementsError by remember { mutableStateOf("") }
 
-    // مشاهدة رسائل الخطأ من الـ ViewModel
     LaunchedEffect(viewModel.errorMessage.value) {
         viewModel.errorMessage.value?.let { error ->
             if (error.contains("Wrong current password", ignoreCase = true)) {
@@ -59,7 +58,6 @@ fun EditProfileScreen(
         }
     }
 
-    // التحقق من صحة الباسوورد الحالي
     fun validateCurrentPassword(): Boolean {
         return if (passwordNew.isNotEmpty() && passwordCurrent.isEmpty()) {
             currentPasswordError = "Please enter current password"
@@ -70,7 +68,6 @@ fun EditProfileScreen(
         }
     }
 
-    // التحقق من تطابق الباسوورد الجديد
     fun validatePasswordMatch(): Boolean {
         return if (passwordNew.isNotEmpty() && passwordNew != passwordConfirm) {
             passwordMatchError = "Passwords do not match"
@@ -81,7 +78,6 @@ fun EditProfileScreen(
         }
     }
 
-    // التحقق من شروط الباسوورد الجديد
     fun validatePasswordRequirements(): Boolean {
         return if (passwordNew.isNotEmpty()) {
             val validationResult = viewModel.validateNewPassword(passwordNew)
@@ -98,7 +94,6 @@ fun EditProfileScreen(
         }
     }
 
-    // التحقق من جميع الشروط
     fun validateForm(): Boolean {
         val isPasswordMatchValid = validatePasswordMatch()
         val isCurrentPasswordValid = validateCurrentPassword()
@@ -135,8 +130,6 @@ fun EditProfileScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            // Profile Image
             Box(
                 modifier = Modifier
                     .size(80.dp)
@@ -162,10 +155,8 @@ fun EditProfileScreen(
                 }
             }
 
-
             Spacer(Modifier.height(24.dp))
 
-            // Personal Information Card
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -208,7 +199,6 @@ fun EditProfileScreen(
 
             Spacer(Modifier.height(20.dp))
 
-            // Change Password Card
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -229,16 +219,11 @@ fun EditProfileScreen(
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
 
-                    // رسالة متطلبات الباسوورد
-                    if (passwordNew.isEmpty()) {
-
-                    }
-
                     OutlinedTextField(
                         value = passwordCurrent,
                         onValueChange = {
                             passwordCurrent = it
-                            currentPasswordError = "" // مسح الخطأ عند الكتابة
+                            currentPasswordError = ""
                         },
                         label = { Text("Current Password") },
                         visualTransformation = PasswordVisualTransformation(),
@@ -247,7 +232,6 @@ fun EditProfileScreen(
                         isError = currentPasswordError.isNotEmpty()
                     )
 
-                    // رسالة خطأ الباسوورد الحالي
                     if (currentPasswordError.isNotEmpty()) {
                         Text(
                             text = currentPasswordError,
@@ -265,8 +249,8 @@ fun EditProfileScreen(
                         value = passwordNew,
                         onValueChange = {
                             passwordNew = it
-                            passwordMatchError = "" // مسح الخطأ عند الكتابة
-                            passwordRequirementsError = "" // مسح الخطأ عند الكتابة
+                            passwordMatchError = ""
+                            passwordRequirementsError = ""
                         },
                         label = { Text("New Password") },
                         visualTransformation = PasswordVisualTransformation(),
@@ -275,7 +259,6 @@ fun EditProfileScreen(
                         isError = passwordMatchError.isNotEmpty() || passwordRequirementsError.isNotEmpty()
                     )
 
-                    // رسالة خطأ متطلبات الباسوورد
                     if (passwordRequirementsError.isNotEmpty()) {
                         Text(
                             text = passwordRequirementsError,
@@ -293,7 +276,7 @@ fun EditProfileScreen(
                         value = passwordConfirm,
                         onValueChange = {
                             passwordConfirm = it
-                            passwordMatchError = "" // مسح الخطأ عند الكتابة
+                            passwordMatchError = ""
                         },
                         label = { Text("Confirm New Password") },
                         visualTransformation = PasswordVisualTransformation(),
@@ -302,7 +285,6 @@ fun EditProfileScreen(
                         isError = passwordMatchError.isNotEmpty()
                     )
 
-                    // رسالة خطأ تطابق الباسوورد
                     if (passwordMatchError.isNotEmpty()) {
                         Text(
                             text = passwordMatchError,
@@ -325,7 +307,6 @@ fun EditProfileScreen(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Cancel Button
                 Button(
                     onClick = { navController.popBackStack() },
                     modifier = Modifier
@@ -346,12 +327,9 @@ fun EditProfileScreen(
                     )
                 }
 
-                // Save Changes Button
                 Button(
                     onClick = {
-                        // التحقق من جميع الشروط أولاً
                         if (!validateForm()) {
-                            // إذا كان هناك خطأ في متطلبات الباسوورد، عرض Toast
                             if (passwordRequirementsError.isNotEmpty()) {
                                 Toast.makeText(context, passwordRequirementsError, Toast.LENGTH_LONG).show()
                             }
@@ -361,7 +339,6 @@ fun EditProfileScreen(
                         isLoading = true
                         scope.launch {
                             try {
-                                // التحقق من صحة الباسوورد الحالي مع السيرفر
                                 if (passwordNew.isNotEmpty()) {
                                     val isCurrentPasswordCorrect = viewModel.verifyCurrentPassword(passwordCurrent)
                                     if (!isCurrentPasswordCorrect) {
