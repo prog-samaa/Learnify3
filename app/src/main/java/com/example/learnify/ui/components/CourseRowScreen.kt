@@ -1,6 +1,10 @@
 package com.example.learnify.ui.components
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -10,7 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
+import com.example.learnify.R
 import com.example.learnify.ui.CourseViewModel
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -62,15 +69,32 @@ fun CourseRowScreen(
 
     when {
         isLoading -> Loading()
-        error != null -> Text(
-            text = error ?: "Unknown error",
-            modifier = Modifier.padding(16.dp)
-        )
 
-        courses.isEmpty() -> Text(
-            text = error ?: "No Courses Found",
-            modifier = Modifier.padding(16.dp)
-        )
+        error != null -> Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.unknownerror_icon),
+                contentDescription = "No courses Image",
+                modifier = Modifier.size(100.dp)
+            )
+        }
+
+        courses.isEmpty() -> Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.nocourses_icon),
+                contentDescription = "No courses Image",
+                modifier = Modifier.size(100.dp)
+            )
+        }
 
         else -> LazyRow(modifier = Modifier.padding(8.dp)) {
             items(courses) { course ->

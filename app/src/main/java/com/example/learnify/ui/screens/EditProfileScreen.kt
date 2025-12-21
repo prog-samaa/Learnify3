@@ -3,8 +3,10 @@ package com.example.learnify.ui.screens
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
@@ -122,14 +124,17 @@ fun EditProfileScreen(
             )
         }
     ) { padding ->
+        val scrollState = rememberScrollState()
+
         Column(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
+                .verticalScroll(scrollState)
                 .background(AppBackgroundColor)
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        )  {
             Box(
                 modifier = Modifier
                     .size(80.dp)
@@ -303,15 +308,15 @@ fun EditProfileScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 32.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(
                     onClick = { navController.popBackStack() },
                     modifier = Modifier
                         .weight(1f)
-                        .height(50.dp),
+                        .height(60.dp),
                     shape = RoundedCornerShape(12.dp),
                     enabled = !isLoading,
                     colors = ButtonDefaults.buttonColors(
@@ -367,7 +372,7 @@ fun EditProfileScreen(
                     },
                     modifier = Modifier
                         .weight(1f)
-                        .height(50.dp),
+                        .height(60.dp),
                     shape = RoundedCornerShape(12.dp),
                     enabled = !isLoading,
                     colors = ButtonDefaults.buttonColors(

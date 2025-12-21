@@ -1,17 +1,20 @@
 package com.example.learnify.ui.screens
 
 import androidx.compose.animation.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Task
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -19,7 +22,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.learnify.data.local.TaskEntity
 import com.example.learnify.ui.theme.AppBackgroundColor
+import com.example.learnify.ui.theme.CardBackgroundColor
 import com.example.learnify.ui.theme.Light_Brown
+import com.example.learnify.ui.theme.PrimaryColor
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import com.example.learnify.R
+import com.example.learnify.ui.theme.SecondaryColor
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -34,78 +44,120 @@ fun ToDoScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(AppBackgroundColor)
-            .padding(16.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = Light_Brown,
+                    shape = RoundedCornerShape(
+                        bottomStart = 24.dp,
+                        bottomEnd = 24.dp
+                    )
+                )
+                .padding(16.dp)
         ) {
-            OutlinedTextField(
-                value = text,
-                onValueChange = { text = it },
-                label = { Text("Enter task") },
-                modifier = Modifier.weight(1f),
-                shape = RoundedCornerShape(12.dp)
-            )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Button(
-                onClick = {
-                    viewModel.addTask(text)
-                    text = ""
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Light_Brown),
-                shape = RoundedCornerShape(18.dp),
-                modifier = Modifier.height(56.dp)
+            Row(
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Add", color = Color.White)
+                TextField(
+                    value = text,
+                    onValueChange = { text = it },
+                    placeholder = { Text("Enter tasks...") },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Default.Task,
+                            contentDescription = "Tasks Icon"
+                        )
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(16.dp)),
+                    colors = TextFieldDefaults.colors(
+                        disabledContainerColor = SecondaryColor,
+                        focusedContainerColor = SecondaryColor,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        cursorColor = PrimaryColor
+                    ),
+                    shape = RoundedCornerShape(16.dp),
+                    singleLine = true
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Button(
+                    onClick = {
+                        viewModel.addTask(text)
+                        text = ""
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
+                    shape = RoundedCornerShape(24.dp),
+                    modifier = Modifier.height(56.dp)
+                ) {
+                    Text("Add", color = Color.White)
+                }
             }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        if (tasks.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = "I'm ready to capture your notes!",
-                        fontSize = 20.sp,
-                        color = Color.Gray,
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Box(
-                        modifier = Modifier
-                            .size(12.dp)
-                            .background(Light_Brown, shape = RoundedCornerShape(6.dp))
-                    )
-                }
-            }
-        } else {
-
-            AnimatedContent(
-                targetState = tasks,
-                label = ""
-            ) { list ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .verticalScroll(rememberScrollState())   // ← scroll enabled
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+        ) {
+            if (tasks.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    list.forEach { task ->
-                        AnimatedVisibility(
-                            visible = true,
-                            enter = fadeIn() + slideInVertically(),
-                            exit = fadeOut() + slideOutVertically()
-                        ) {
-                            TaskItem(
-                                task = task,
-                                onCheckedChange = { done -> viewModel.toggleDone(task, done) },
-                                onDelete = { viewModel.deleteTask(task) }
-                            )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.to_do_background),
+                            contentDescription = "No Tasks Image",
+                            modifier = Modifier.size(220.dp)
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Text(
+                            text = "No tasks yet...",
+                            fontSize = 20.sp,
+                            color = Color.Gray,
+                            fontFamily = FontFamily(Font(R.font.playwrite))
+                        )
+                    }
+                }
+            } else {
+                AnimatedContent(
+                    targetState = tasks,
+                    label = ""
+                ) { list ->
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        list.forEach { task ->
+                            AnimatedVisibility(
+                                visible = true,
+                                enter = fadeIn() + slideInVertically(),
+                                exit = fadeOut() + slideOutVertically()
+                            ) {
+                                TaskItem(
+                                    task = task,
+                                    onCheckedChange = { done ->
+                                        viewModel.toggleDone(task, done)
+                                    },
+                                    onDelete = {
+                                        viewModel.deleteTask(task)
+                                    }
+                                )
+                            }
                         }
                     }
                 }
@@ -120,37 +172,61 @@ fun TaskItem(
     onCheckedChange: (Boolean) -> Unit,
     onDelete: () -> Unit
 ) {
-    Card(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        shape = RoundedCornerShape(12.dp)
+            .padding(vertical = 4.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.Top,
-            horizontalArrangement = Arrangement.Start
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(containerColor = CardBackgroundColor)
         ) {
-            Checkbox(
-                checked = task.isDone,
-                onCheckedChange = onCheckedChange
-            )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Text(
-                text = task.text,
+            Row(
                 modifier = Modifier
-                    .weight(1f)
-            )
+                    .fillMaxWidth()
+                    .padding(12.dp),
+                verticalAlignment = Alignment.Top
+            ) {
+                Checkbox(
+                    checked = task.isDone,
+                    onCheckedChange = onCheckedChange
+                )
 
-            Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(8.dp))
 
-            IconButton(onClick = onDelete) {
-                Icon(Icons.Default.Delete, contentDescription = "Delete Task")
+                Text(
+                    text = task.text,
+                    modifier = Modifier.weight(1f)
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                IconButton(
+                    onClick = onDelete,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .offset(x = (-8).dp, y = 6.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.trash_icon),
+                        contentDescription = "Delete Task",
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
             }
         }
+
+        Icon(
+            painter = painterResource(id = R.drawable.card_icon),
+            contentDescription = "Panda Icon",
+            tint = Color.Unspecified,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .size(36.dp)
+                .offset(x = 10.dp, y = (-4).dp)
+                .rotate(12f)
+        )
     }
 }

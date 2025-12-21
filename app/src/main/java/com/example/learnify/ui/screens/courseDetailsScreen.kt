@@ -177,9 +177,13 @@ fun courseDetailsScreen(
 
                 Button(
                     onClick = {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=${course.id}"))
+                        val intent = Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("https://www.youtube.com/playlist?list=${course.id}")
+                        )
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         context.startActivity(intent)
+
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = PrimaryColor,

@@ -1,24 +1,26 @@
 package com.example.learnify.ui.screens
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.learnify.R
 import com.example.learnify.ui.PomodoroViewModel
-import com.example.learnify.ui.theme.AppBackgroundColor
 import com.example.learnify.ui.theme.Light_Brown
 import com.example.learnify.ui.theme.PrimaryColor
 
@@ -31,145 +33,152 @@ fun PomodoroScreen(navController: NavController, viewModel: PomodoroViewModel) {
     val minutes = timeLeft / 60
     val seconds = timeLeft % 60
     val formattedTime = String.format("%02d:%02d", minutes, seconds)
-    val progress = if (totalTime > 0) (timeLeft.toFloat() / totalTime.toFloat()) else 0f
 
+    val progress = if (totalTime > 0) timeLeft.toFloat() / totalTime.toFloat() else 0f
     val titleText = if (isBreak) "Break Time" else "Work Time"
-    val titleColor = Light_Brown
-    val buttonColor = PrimaryColor
     val titleFont = FontFamily(Font(R.font.playwrite))
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(AppBackgroundColor),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                androidx.compose.foundation.Image(
-                    painter = painterResource(
-                        id = if (isBreak) R.drawable.break_logo else R.drawable.work_logo
-                    ),
-                    contentDescription = "Icon",
-                    modifier = Modifier
-                        .size(56.dp)
-                        .padding(end = 6.dp)
-                )
-                Text(
-                    text = titleText,
-                    fontSize = 36.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = titleColor,
-                    fontFamily = titleFont,
-                    textAlign = TextAlign.Center
-                )
-            }
+    Box(modifier = Modifier.fillMaxSize()) {
 
-            Spacer(modifier = Modifier.height(16.dp))
+        Image(
+            painter = painterResource(id = R.drawable.pomodoro_screen),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 40.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
             Box(
                 contentAlignment = Alignment.Center,
-                modifier = Modifier.size(200.dp)
+                modifier = Modifier.size(320.dp)
             ) {
-                CircularProgressIndicator(
-                    progress = 1f - progress,
-                    strokeWidth = 8.dp,
-                    color = PrimaryColor,
+
+                PomodoroDial(
+                    progress = progress,
                     modifier = Modifier.fillMaxSize()
                 )
-                Text(
-                    text = formattedTime,
-                    fontSize = 60.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black,
-                    textAlign = TextAlign.Center
-                )
-            }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(24.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Button(
-                    onClick = {
-                        if (viewModel.isRunning) viewModel.pauseTimer()
-                        else viewModel.startTimer()
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
-                    shape = RoundedCornerShape(50),
-                    modifier = Modifier
-                        .width(140.dp)
-                        .height(50.dp)
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.padding(50.dp)
                 ) {
+
                     Text(
-                        text = if (viewModel.isRunning) "Pause" else "Start",
-                        fontSize = 18.sp
+                        text = formattedTime,
+                        fontSize = 58.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black
                     )
-                }
-                Button(
-                    onClick = { viewModel.resetTimer() },
-                    colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
-                    shape = RoundedCornerShape(50),
-                    modifier = Modifier
-                        .width(120.dp)
-                        .height(50.dp)
-                ) {
-                    Text("Reset", fontSize = 18.sp)
-                }
-            }
 
-            Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(24.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Button(
-                    onClick = { viewModel.startWork() },
-                    colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
-                    shape = RoundedCornerShape(50),
-                    modifier = Modifier
-                        .width(140.dp)
-                        .height(50.dp)
-                ) {
-                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                        Text(
-                            "25m Work",
-                            fontSize = 16.sp,
-                            color = titleColor,
-                            fontFamily = titleFont,
-                            textAlign = TextAlign.Center
-                        )
+                    Text(
+                        text = titleText,
+                        fontSize = 16.sp,
+                        fontFamily = titleFont,
+                        color = Light_Brown
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(20.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+                        IconButton(onClick = { viewModel.pauseTimer() }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.pause_icon),
+                                contentDescription = "Pause",
+                                tint = PrimaryColor,
+                                modifier = Modifier.size(36.dp)
+                            )
+                        }
+
+                        IconButton(onClick = { viewModel.startTimer() }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.start_icon),
+                                contentDescription = "Start",
+                                tint = PrimaryColor,
+                                modifier = Modifier.size(36.dp)
+                            )
+                        }
+
+                        IconButton(onClick = { viewModel.resetTimer() }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.reset_icon),
+                                contentDescription = "Reset",
+                                tint = PrimaryColor,
+                                modifier = Modifier.size(36.dp)
+                            )
+                        }
                     }
                 }
+            }
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(32.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Button(
+                    onClick = { viewModel.startWork() },
+                    shape = CircleShape,
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
+                    modifier = Modifier.size(110.dp)
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("25 m", color = Color.White, fontWeight = FontWeight.Bold)
+                        Text("Work", color = Color.White, fontSize = 14.sp)
+                    }
+                }
+
                 Button(
                     onClick = { viewModel.startBreak() },
-                    colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
-                    shape = RoundedCornerShape(50),
-                    modifier = Modifier
-                        .width(140.dp)
-                        .height(50.dp)
+                    shape = CircleShape,
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
+                    modifier = Modifier.size(110.dp)
                 ) {
-                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                        Text(
-                            "5m Break",
-                            fontSize = 16.sp,
-                            color = titleColor,
-                            fontFamily = titleFont,
-                            textAlign = TextAlign.Center
-                        )
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("5 m", color = Color.White, fontWeight = FontWeight.Bold)
+                        Text("Break", color = Color.White, fontSize = 14.sp)
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun PomodoroDial(
+    progress: Float,
+    modifier: Modifier = Modifier
+) {
+    Canvas(modifier = modifier) {
+        val strokeWidth = 14.dp.toPx()
+        val radius = size.minDimension / 2 - strokeWidth
+
+        drawCircle(
+            color = Color.LightGray.copy(alpha = 0.35f),
+            radius = radius,
+            style = Stroke(width = strokeWidth)
+        )
+
+        drawArc(
+            color = PrimaryColor,
+            startAngle = -90f,
+            sweepAngle = 360f * (1f - progress),
+            useCenter = false,
+            style = Stroke(
+                width = strokeWidth,
+                cap = StrokeCap.Round
+            )
+        )
     }
 }

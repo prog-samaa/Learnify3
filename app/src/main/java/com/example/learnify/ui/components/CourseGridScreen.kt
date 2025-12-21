@@ -1,5 +1,6 @@
 package com.example.learnify.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -10,7 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
+import com.example.learnify.R
 import com.example.learnify.ui.CourseViewModel
 
 @Composable
@@ -46,8 +50,33 @@ fun CourseGridScreen(
 
     when {
         isLoading -> Loading()
-        error != null -> Text(text = error ?: "Unknown error", modifier = Modifier.padding(16.dp))
-        courses.isEmpty() -> Text(text = error ?: "No Courses Found", modifier = Modifier.padding(16.dp))
+
+        error != null -> Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.unknownerror_icon),
+                contentDescription = "No courses Image",
+                modifier = Modifier.size(100.dp)
+            )
+        }
+
+        courses.isEmpty() -> Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.nocourses_icon),
+                contentDescription = "No courses Image",
+                modifier = Modifier.size(100.dp)
+            )
+        }
+
         else -> {
             val rows = (courses.size + 1) / 2
             val gridHeight = (cardHeight * rows) + (16.dp.value * (rows - 1))
