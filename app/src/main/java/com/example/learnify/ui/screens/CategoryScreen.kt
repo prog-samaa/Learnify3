@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,7 +16,6 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.learnify.R
 import com.example.learnify.ui.components.CourseGridScreen
@@ -33,13 +33,12 @@ fun CategoryScreen(
 ) {
     var searchQuery by remember { mutableStateOf("") }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(260.dp)
+                .fillMaxHeight(0.28f)
                 .clip(RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
                 .background(Light_Brown)
                 .align(Alignment.TopCenter)
@@ -47,38 +46,40 @@ fun CategoryScreen(
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.Start
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+
             item {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
                 ) {
+
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 6.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+
                         Text(
                             text = CategoryName,
-                            fontSize = 24.sp,
+                            style = MaterialTheme.typography.headlineMedium,
                             fontWeight = FontWeight.ExtraBold,
                             color = PrimaryColor,
-                            modifier = Modifier.weight(1f),
-                            fontFamily = FontFamily(Font(R.font.playwrite))
+                            fontFamily = FontFamily(Font(R.font.playwrite)),
+                            modifier = Modifier.weight(1f)
                         )
 
                         Image(
                             painter = painterResource(id = R.drawable.category_screen_icon),
                             contentDescription = null,
-                            modifier = Modifier.size(30.dp)
+                            modifier = Modifier
+                                .fillMaxWidth(0.08f)
+                                .aspectRatio(1f)
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     LearnifySearchBar(
                         onSearch = { query ->
@@ -86,17 +87,16 @@ fun CategoryScreen(
                         }
                     )
 
-                    Spacer(modifier = Modifier.height(9.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
-                    Row(modifier = Modifier.padding(start = 8.dp)) {
-                        Text(
-                            text = "Trending",
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = PrimaryColor,
-                            fontFamily = FontFamily(Font(R.font.playwrite))
-                        )
-                    }
+                    Text(
+                        text = "Trending",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = PrimaryColor,
+                        fontFamily = FontFamily(Font(R.font.playwrite)),
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
                 }
             }
 
@@ -110,8 +110,6 @@ fun CategoryScreen(
 
             item {
                 CourseGridScreen(
-                    cardWeight = 260,
-                    cardHeight = 285,
                     query = if (searchQuery.isBlank()) QueryGrid else searchQuery,
                     isSearch = searchQuery.isNotBlank(),
                     navController = navController
@@ -119,7 +117,7 @@ fun CategoryScreen(
             }
 
             item {
-                Spacer(modifier = Modifier.height(50.dp))
+                Spacer(modifier = Modifier.height(40.dp))
             }
         }
     }

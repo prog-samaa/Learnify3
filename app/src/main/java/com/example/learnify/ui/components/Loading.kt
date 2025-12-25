@@ -14,7 +14,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.learnify.R
 import com.example.learnify.ui.theme.PrimaryColor
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -34,7 +39,12 @@ fun Loading() {
                 polygons = LoadingIndicatorDefaults.IndeterminateIndicatorPolygons
             )
             Spacer(modifier = Modifier.height(12.dp))
-            Text("Loading courses...")
+            Text(
+                text = "Loading courses...",
+                color = Color.Gray,
+                fontFamily = FontFamily(Font(R.font.playwrite))
+            )
+
         }
     }
 }

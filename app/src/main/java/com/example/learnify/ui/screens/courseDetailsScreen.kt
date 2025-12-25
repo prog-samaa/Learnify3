@@ -168,6 +168,14 @@ fun courseDetailsScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
+                    text = " ${course.publishedAt}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
                     text = course.description,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onBackground
@@ -183,7 +191,6 @@ fun courseDetailsScreen(
                         )
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         context.startActivity(intent)
-
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = PrimaryColor,

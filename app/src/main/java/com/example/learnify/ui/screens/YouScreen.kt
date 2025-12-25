@@ -1,6 +1,7 @@
 package com.example.learnify.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -10,6 +11,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckBox
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.WatchLater
 import androidx.compose.material3.*
@@ -31,7 +34,6 @@ import com.example.learnify.ui.components.CourseCard
 import com.example.learnify.ui.theme.AppBackgroundColor
 import com.example.learnify.ui.theme.PrimaryColor
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun YouScreen(
     navController: NavController,
@@ -84,19 +86,7 @@ fun YouScreen(
         return
     }
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Profile",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            )
-        }
-    ) { padding ->
+    Scaffold { padding ->
         Column(
             modifier = Modifier
                 .padding(padding)
@@ -107,38 +97,61 @@ fun YouScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(16.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(80.dp)
-                        .clip(CircleShape)
-                        .background(Color(0xFF7D5260)),
-                    contentAlignment = Alignment.Center
+                Row(
+                    verticalAlignment = Alignment.Top,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    if (user!!.imageUrl.isNotEmpty()) {
-                        AsyncImage(
-                            model = user!!.imageUrl,
-                            contentDescription = "Profile",
-                            modifier = Modifier.fillMaxSize().clip(CircleShape)
-                        )
-                    } else {
-                        Text(
+                    Box(
+                        modifier = Modifier
+                            .size(80.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFF7D5260)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (user!!.imageUrl.isNotEmpty()) {
+                            AsyncImage(
+                                model = user!!.imageUrl,
+                                contentDescription = "Profile",
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(CircleShape)
+                            )
+                        } else {
+                            Text(
+                                user!!.name.firstOrNull()?.uppercase() ?: "?",
+                                color = Color.White,
+                                style = MaterialTheme.typography.headlineLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
 
-                            user!!.name.firstOrNull()?.uppercase() ?: "?",
-                            color = Color.White,
-                            style = MaterialTheme.typography.headlineLarge,
-                            fontWeight = FontWeight.Bold
+                    Spacer(Modifier.width(16.dp))
+
+                    Column(
+                        verticalArrangement = Arrangement.Top,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            user!!.name,
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.headlineSmall
+                        )
+                        Text(
+                            user!!.email,
+                            color = Color.Gray,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        Text(
+                            user!!.phone,
+                            color = Color.Gray,
+                            style = MaterialTheme.typography.bodySmall
                         )
                     }
                 }
-
-                Spacer(Modifier.height(16.dp))
-
-                Text(user!!.name, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.headlineSmall)
-                Text(user!!.email, color = Color.Gray)
-                Text(user!!.phone, color = Color.Gray)
 
                 Spacer(Modifier.height(24.dp))
 
@@ -150,7 +163,11 @@ fun YouScreen(
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor)
                 ) {
-                    Text("Edit Profile", color = Color.White, style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        "Edit Profile",
+                        color = Color.White,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
                 }
 
                 Spacer(Modifier.height(24.dp))
@@ -229,6 +246,8 @@ fun ProfileCoursesSection(
     navController: NavController,
     emptyMessage: String = "No courses found"
 ) {
+    var expanded by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -236,7 +255,12 @@ fun ProfileCoursesSection(
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { expanded = !expanded }
+            ) {
                 Icon(icon, contentDescription = null, tint = PrimaryColor)
                 Spacer(Modifier.width(8.dp))
                 Text(
@@ -250,37 +274,45 @@ fun ProfileCoursesSection(
                     color = Color.Gray,
                     style = MaterialTheme.typography.bodySmall
                 )
+                Spacer(Modifier.weight(1f))
+                Icon(
+                    imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                    contentDescription = null,
+                    tint = Color.Gray
+                )
             }
 
             Spacer(Modifier.height(12.dp))
 
-            if (courses.isEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(80.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = emptyMessage,
-                        color = Color.Gray,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            } else {
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    contentPadding = PaddingValues(vertical = 8.dp)
-                ) {
-                    items(courses, key = { it.id }) { course ->
-                        CourseCard(
-                            course = course,
-                            cardWeight = 245,
-                            cardHeight = 300,
-                            onCourseClick = { selectedCourse ->
-                                navController.navigate("courseDetails/${selectedCourse.id}")
-                            }
+            if (expanded) {
+                if (courses.isEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(80.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = emptyMessage,
+                            color = Color.Gray,
+                            style = MaterialTheme.typography.bodyMedium
                         )
+                    }
+                } else {
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        contentPadding = PaddingValues(vertical = 8.dp)
+                    ) {
+                        items(courses, key = { it.id }) { course ->
+                            CourseCard(
+                                course = course,
+                                cardWeight = 245,
+                                cardHeight = 300,
+                                onCourseClick = { selectedCourse ->
+                                    navController.navigate("courseDetails/${selectedCourse.id}")
+                                }
+                            )
+                        }
                     }
                 }
             }

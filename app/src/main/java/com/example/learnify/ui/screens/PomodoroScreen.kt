@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -39,7 +40,6 @@ fun PomodoroScreen(navController: NavController, viewModel: PomodoroViewModel) {
     val titleFont = FontFamily(Font(R.font.playwrite))
 
     Box(modifier = Modifier.fillMaxSize()) {
-
         Image(
             painter = painterResource(id = R.drawable.pomodoro_screen),
             contentDescription = null,
@@ -53,12 +53,10 @@ fun PomodoroScreen(navController: NavController, viewModel: PomodoroViewModel) {
                 .padding(top = 40.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.size(320.dp)
             ) {
-
                 PomodoroDial(
                     progress = progress,
                     modifier = Modifier.fillMaxSize()
@@ -68,7 +66,6 @@ fun PomodoroScreen(navController: NavController, viewModel: PomodoroViewModel) {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.padding(50.dp)
                 ) {
-
                     Text(
                         text = formattedTime,
                         fontSize = 58.sp,
@@ -91,7 +88,6 @@ fun PomodoroScreen(navController: NavController, viewModel: PomodoroViewModel) {
                         horizontalArrangement = Arrangement.spacedBy(20.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-
                         IconButton(onClick = { viewModel.pauseTimer() }) {
                             Icon(
                                 painter = painterResource(id = R.drawable.pause_icon),
@@ -101,7 +97,9 @@ fun PomodoroScreen(navController: NavController, viewModel: PomodoroViewModel) {
                             )
                         }
 
-                        IconButton(onClick = { viewModel.startTimer() }) {
+                        val context = LocalContext.current
+
+                        IconButton(onClick = { viewModel.startTimer(context) }) {
                             Icon(
                                 painter = painterResource(id = R.drawable.start_icon),
                                 contentDescription = "Start",
@@ -126,7 +124,6 @@ fun PomodoroScreen(navController: NavController, viewModel: PomodoroViewModel) {
                 horizontalArrangement = Arrangement.spacedBy(32.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
                 Button(
                     onClick = { viewModel.startWork() },
                     shape = CircleShape,

@@ -20,7 +20,7 @@ import com.example.learnify.ui.CourseViewModel
 @Composable
 fun CourseGridScreen(
     cardWeight: Int = 245,
-    cardHeight: Int = 300,
+    cardHeight: Int = 280,
     query: String,
     isSearch: Boolean = false,
     viewModel: CourseViewModel = viewModel(),

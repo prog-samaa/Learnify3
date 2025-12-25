@@ -1,11 +1,13 @@
 package com.example.learnify.ui
 
+import android.content.Context
+import android.media.MediaPlayer
+import com.example.learnify.R
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -27,15 +29,18 @@ class PomodoroViewModel : ViewModel() {
 
     private var timerJob: Job? = null
 
-    fun startTimer() {
+    fun startTimer(context: Context) {
         if (isRunning) return
         isRunning = true
-        timerJob = CoroutineScope(Dispatchers.Main).launch {
+        timerJob = viewModelScope.launch {
             while (timeLeft > 0 && isActive) {
                 delay(1000)
                 timeLeft--
             }
             isRunning = false
+            if (timeLeft == 0) {
+                playAlarm(context)
+            }
         }
     }
 
@@ -62,5 +67,10 @@ class PomodoroViewModel : ViewModel() {
         isBreakTime = true
         timeLeft = 5 * 60
         totalTime = timeLeft
+    }
+
+    fun playAlarm(context: Context) {
+        val mediaPlayer = MediaPlayer.create(context, R.raw.pomodoro_sound)
+        mediaPlayer.start()
     }
 }
