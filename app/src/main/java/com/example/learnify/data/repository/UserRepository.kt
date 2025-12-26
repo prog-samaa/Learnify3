@@ -18,7 +18,6 @@ class UserRepository {
             val uid = result.user?.uid ?: return false
             val user = User(uid, name, email, phone, "")
             users.document(uid).set(user).await()
-            auth.signOut()
             true
         } catch (e: Exception) {
             throw e
