@@ -16,6 +16,20 @@ class UserViewModel : ViewModel() {
     val errorMessage = mutableStateOf<String?>(null)
     val currentUser = mutableStateOf<User?>(null)
 
+    init {
+        checkIfUserLoggedIn()
+    }
+
+    private fun checkIfUserLoggedIn() {
+        val firebaseUser = repo.getCurrentUser()
+        if (firebaseUser != null) {
+            observeCurrentUser()
+            isLoggedIn.value = true
+        } else {
+            isLoggedIn.value = false
+        }
+    }
+
     private fun observeCurrentUser() {
         val firebaseUser = repo.getCurrentUser() ?: return
         val uid = firebaseUser.uid
