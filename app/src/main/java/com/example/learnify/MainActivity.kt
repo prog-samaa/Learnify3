@@ -22,7 +22,6 @@ import com.example.learnify.ui.viewModels.CourseViewModel
 import com.example.learnify.ui.viewModels.PomodoroViewModel
 import com.example.learnify.ui.viewModels.ToDoViewModel
 import com.example.learnify.viewmodel.UserViewModel
-import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
 
