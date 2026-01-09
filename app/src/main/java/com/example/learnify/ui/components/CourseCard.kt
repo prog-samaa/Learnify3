@@ -1,13 +1,10 @@
 package com.example.learnify.ui.components
 
-import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,7 +23,6 @@ import com.example.learnify.data.local.CourseEntity
 import com.example.learnify.ui.theme.ActiveStar
 import com.example.learnify.ui.theme.unActiveStar
 import com.example.learnify.ui.theme.AppBackgroundColor
-
 
 @Composable
 fun CourseCard(
@@ -77,10 +73,8 @@ fun CourseCard(
                 SubcomposeAsyncImageContent(
                     modifier = Modifier
                         .fillMaxSize()
-                        .graphicsLayer {
-                            scaleY = 1.39f
-                            translationY = -6f
-                        })
+                        .graphicsLayer { scaleY = 1.39f }
+                )
             }
 
             Column(
@@ -101,21 +95,7 @@ fun CourseCard(
                     color = Color.Gray,
                     maxLines = 1
                 )
-
-                Row {
-                    val rating = course.rating ?: 4f
-                    Log.d("CourseRating", "Course ${course.title} -> $rating")
-
-                    repeat(5) { index ->
-                        val tint = if (index < rating.toInt()) ActiveStar else unActiveStar
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = null,
-                            tint = tint,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-                }
+                RatingStars(course.rating ?: 4f)
             }
         }
     }

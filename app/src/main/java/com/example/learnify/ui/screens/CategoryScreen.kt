@@ -16,13 +16,16 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.learnify.R
 import com.example.learnify.ui.components.CourseGridScreen
 import com.example.learnify.ui.components.CourseRowScreen
 import com.example.learnify.ui.components.LearnifySearchBar
-import com.example.learnify.ui.theme.PrimaryColor
+import com.example.learnify.ui.theme.AppBackgroundColor
 import com.example.learnify.ui.theme.Light_Brown
+import com.example.learnify.ui.theme.PrimaryColor
+import com.example.learnify.ui.viewModels.CourseViewModel
 
 @Composable
 fun CategoryScreen(
@@ -31,15 +34,24 @@ fun CategoryScreen(
     TrendingChannelId: String,
     navController: NavHostController
 ) {
+    val courseViewModel: CourseViewModel = viewModel()
     var searchQuery by remember { mutableStateOf("") }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppBackgroundColor)
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(0.28f)
-                .clip(RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
+                .clip(
+                    RoundedCornerShape(
+                        bottomStart = 32.dp,
+                        bottomEnd = 32.dp
+                    )
+                )
                 .background(Light_Brown)
                 .align(Alignment.TopCenter)
         )
@@ -48,19 +60,16 @@ fun CategoryScreen(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-
             item {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
                 ) {
-
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-
                         Text(
                             text = CategoryName,
                             style = MaterialTheme.typography.titleLarge,
@@ -71,7 +80,9 @@ fun CategoryScreen(
                         )
 
                         Image(
-                            painter = painterResource(id = R.drawable.category_screen_icon),
+                            painter = painterResource(
+                                id = R.drawable.category_screen_icon
+                            ),
                             contentDescription = null,
                             modifier = Modifier
                                 .fillMaxWidth(0.08f)
@@ -79,7 +90,7 @@ fun CategoryScreen(
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
 
                     LearnifySearchBar(
                         onSearch = { query ->
@@ -87,7 +98,7 @@ fun CategoryScreen(
                         }
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
                         text = "Trending",
@@ -104,15 +115,21 @@ fun CategoryScreen(
                 CourseRowScreen(
                     query = TrendingChannelId,
                     isTrending = true,
-                    navController = navController
+                    navController = navController,
+                    viewModel = courseViewModel
                 )
             }
 
             item {
                 CourseGridScreen(
-                    query = if (searchQuery.isBlank()) QueryGrid else searchQuery,
+                    query = if (searchQuery.isBlank()) {
+                        QueryGrid
+                    } else {
+                        searchQuery
+                    },
                     isSearch = searchQuery.isNotBlank(),
-                    navController = navController
+                    navController = navController,
+                    viewModel = courseViewModel
                 )
             }
 

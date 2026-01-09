@@ -1,14 +1,14 @@
 package com.example.learnify.viewmodel
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.compose.runtime.mutableStateOf
 import com.example.learnify.data.model.User
 import com.example.learnify.data.repository.UserRepository
-import kotlinx.coroutines.launch
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import kotlinx.coroutines.launch
 
 class UserViewModel : ViewModel() {
 
@@ -94,11 +94,16 @@ class UserViewModel : ViewModel() {
 
     fun validateNewPassword(password: String): ValidationResult {
         return when {
-            password.length < 6 -> ValidationResult(false, "Password must be at least 6 characters long")
-            !password.any { it.isDigit() } -> ValidationResult(false, "Password must contain at least one number")
-            !password.any { it.isLetter() } -> ValidationResult(false, "Password must contain at least one letter")
-            !password.any { !it.isLetterOrDigit() } -> ValidationResult(false, "Password must contain at least one special character")
-            else -> ValidationResult(true, "Password is valid")
+            password.length < 6 ->
+                ValidationResult(false, "Password must be at least 6 characters long")
+            !password.any { it.isDigit() } ->
+                ValidationResult(false, "Password must contain at least one number")
+            !password.any { it.isLetter() } ->
+                ValidationResult(false, "Password must contain at least one letter")
+            !password.any { !it.isLetterOrDigit() } ->
+                ValidationResult(false, "Password must contain at least one special character")
+            else ->
+                ValidationResult(true, "Password is valid")
         }
     }
 
@@ -150,11 +155,6 @@ class UserViewModel : ViewModel() {
     fun addToFavorites(courseId: String) {
         viewModelScope.launch {
             try {
-                val currentFavorites = currentUser.value?.favorites ?: emptyList()
-                if (!currentFavorites.contains(courseId)) {
-                    val updatedFavorites = currentFavorites + courseId
-                    repo.updateUserInfo(updates = mapOf("favorites" to updatedFavorites))
-                }
                 repo.addToFavorites(courseId)
             } catch (e: Exception) {
                 errorMessage.value = "Failed to add to favorites"
@@ -165,9 +165,6 @@ class UserViewModel : ViewModel() {
     fun removeFromFavorites(courseId: String) {
         viewModelScope.launch {
             try {
-                val currentFavorites = currentUser.value?.favorites ?: emptyList()
-                val updatedFavorites = currentFavorites.filter { it != courseId }
-                repo.updateUserInfo(updates = mapOf("favorites" to updatedFavorites))
                 repo.removeFromFavorites(courseId)
             } catch (e: Exception) {
                 errorMessage.value = "Failed to remove from favorites"
@@ -178,11 +175,6 @@ class UserViewModel : ViewModel() {
     fun addToWatchlist(courseId: String) {
         viewModelScope.launch {
             try {
-                val currentWatchlist = currentUser.value?.watchlist ?: emptyList()
-                if (!currentWatchlist.contains(courseId)) {
-                    val updatedWatchlist = currentWatchlist + courseId
-                    repo.updateUserInfo(updates = mapOf("watchlist" to updatedWatchlist))
-                }
                 repo.addToWatchlist(courseId)
             } catch (e: Exception) {
                 errorMessage.value = "Failed to add to watchlist"
@@ -193,9 +185,6 @@ class UserViewModel : ViewModel() {
     fun removeFromWatchlist(courseId: String) {
         viewModelScope.launch {
             try {
-                val currentWatchlist = currentUser.value?.watchlist ?: emptyList()
-                val updatedWatchlist = currentWatchlist.filter { it != courseId }
-                repo.updateUserInfo(updates = mapOf("watchlist" to updatedWatchlist))
                 repo.removeFromWatchlist(courseId)
             } catch (e: Exception) {
                 errorMessage.value = "Failed to remove from watchlist"
@@ -206,11 +195,6 @@ class UserViewModel : ViewModel() {
     fun addToDoneCourses(courseId: String) {
         viewModelScope.launch {
             try {
-                val currentDoneCourses = currentUser.value?.doneCourses ?: emptyList()
-                if (!currentDoneCourses.contains(courseId)) {
-                    val updatedDoneCourses = currentDoneCourses + courseId
-                    repo.updateUserInfo(updates = mapOf("doneCourses" to updatedDoneCourses))
-                }
                 repo.addToDoneCourses(courseId)
             } catch (e: Exception) {
                 errorMessage.value = "Failed to mark course as completed"
@@ -221,9 +205,6 @@ class UserViewModel : ViewModel() {
     fun removeFromDoneCourses(courseId: String) {
         viewModelScope.launch {
             try {
-                val currentDoneCourses = currentUser.value?.doneCourses ?: emptyList()
-                val updatedDoneCourses = currentDoneCourses.filter { it != courseId }
-                repo.updateUserInfo(updates = mapOf("doneCourses" to updatedDoneCourses))
                 repo.removeFromDoneCourses(courseId)
             } catch (e: Exception) {
                 errorMessage.value = "Failed to remove from completed courses"
@@ -271,5 +252,8 @@ class UserViewModel : ViewModel() {
         }
     }
 
-    data class ValidationResult(val isValid: Boolean, val message: String)
+    data class ValidationResult(
+        val isValid: Boolean,
+        val message: String
+    )
 }

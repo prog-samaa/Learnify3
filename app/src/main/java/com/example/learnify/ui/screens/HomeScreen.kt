@@ -1,7 +1,9 @@
 package com.example.learnify.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -15,9 +17,9 @@ import com.example.learnify.R
 import com.example.learnify.ui.components.CategoryButton
 import com.example.learnify.ui.components.CourseRowScreen
 import com.example.learnify.ui.components.LearnifyHeader
+import com.example.learnify.ui.theme.AppBackgroundColor
 import com.example.learnify.ui.theme.PrimaryColor
 import com.example.learnify.ui.viewModels.CourseViewModel
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 
 @Composable
 fun HomeScreen(
@@ -32,16 +34,14 @@ fun HomeScreen(
     val engineeringTrendingChannelId = "UClqhvGmHcvWL9w3R48t9QXQ"
     val marketingTrendingChannelId = "UCaAx1xeTgF3rs4rBPDq6-Kw"
     val languageTrendingChannelId = "UCu8Lth4FT5HxaP0nypE-gTQ"
-    val humanDevelopmentTrendingChannelId = "UCtYzVCmNxrshH4_bPO_-YA"
+    val humanDevelopmentTrendingChannelId = "UCtYzVCmNxrshH4_bPO_-Y-A"
 
     var searchQuery by remember { mutableStateOf("") }
-    val isRefreshing by
-    courseViewModel.isTrendingLoading.observeAsState(false)
+    val isRefreshing by courseViewModel.isTrendingLoading.observeAsState(false)
 
     PullToRefreshBox(
         isRefreshing = isRefreshing,
         onRefresh = {
-            // دنع بحسلا لفسلأ:
             if (searchQuery.isBlank()) {
                 courseViewModel.refreshTrending("home")
             } else {
@@ -49,6 +49,7 @@ fun HomeScreen(
             }
         },
         modifier = Modifier.fillMaxSize()
+            .background(AppBackgroundColor)
     ) {
         Column(
             modifier = Modifier
@@ -78,8 +79,7 @@ fun HomeScreen(
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = PrimaryColor,
-                        fontFamily =
-                            FontFamily(Font(R.font.playwrite)),
+                        fontFamily = FontFamily(Font(R.font.playwrite))
                     )
                 }
 
@@ -100,55 +100,53 @@ fun HomeScreen(
                         .weight(0.43f)
                 ) {
                     CourseRowScreen(
-                        query = if (searchQuery.isBlank()) "Courses"
-                        else searchQuery,
+                        query = if (searchQuery.isBlank()) "Courses" else searchQuery,
                         isSearch = searchQuery.isNotBlank(),
-                        navController = navController
+                        navController = navController,
+                        viewModel = courseViewModel
                     )
                 }
-
             } else {
-                // ضرع تاشاش ماسقلأا
                 when (selected) {
                     "Programming" -> CategoryScreen(
                         CategoryName = "Programming Core",
                         QueryGrid = "programming courses",
-                        TrendingChannelId =
-                            programmingTrendingChannelId,
+                        TrendingChannelId = programmingTrendingChannelId,
                         navController = navController
                     )
+
                     "Engineering" -> CategoryScreen(
                         CategoryName = "Engineering Core",
                         QueryGrid = "Engineering courses",
-                        TrendingChannelId =
-                            engineeringTrendingChannelId,
+                        TrendingChannelId = engineeringTrendingChannelId,
                         navController = navController
                     )
+
                     "Medical" -> CategoryScreen(
                         CategoryName = "Medical Core",
                         QueryGrid = "medical courses",
                         TrendingChannelId = medicalTrendingChannelId,
                         navController = navController
                     )
+
                     "Marketing" -> CategoryScreen(
                         CategoryName = "Marketing Core",
                         QueryGrid = "marketing courses",
-                        TrendingChannelId =
-                            marketingTrendingChannelId,
+                        TrendingChannelId = marketingTrendingChannelId,
                         navController = navController
                     )
+
                     "Language" -> CategoryScreen(
                         CategoryName = "Language Core",
                         QueryGrid = "language courses",
-                        TrendingChannelId =
-                            languageTrendingChannelId,
+                        TrendingChannelId = languageTrendingChannelId,
                         navController = navController
                     )
+
                     "Human Development" -> CategoryScreen(
                         CategoryName = "Human Development Core",
                         QueryGrid = "Human Development Courses",
-                        TrendingChannelId =
-                            humanDevelopmentTrendingChannelId,
+                        TrendingChannelId = humanDevelopmentTrendingChannelId,
                         navController = navController
                     )
                 }

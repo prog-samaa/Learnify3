@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.Favorite
@@ -18,25 +19,26 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.example.learnify.R
+import com.example.learnify.ui.components.RatingStars
 import com.example.learnify.ui.theme.AppBackgroundColor
 import com.example.learnify.ui.theme.PrimaryColor
+import com.example.learnify.ui.viewModels.CourseViewModel
 import com.example.learnify.viewmodel.UserViewModel
 import kotlinx.coroutines.launch
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.sp
-import com.example.learnify.R
-import com.example.learnify.ui.viewModels.CourseViewModel
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.style.TextOverflow
+
 @Composable
 fun CourseDetailsScreen(
     courseId: String?,
@@ -96,22 +98,30 @@ fun CourseDetailsScreen(
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
+                    RatingStars(
+                        rating = course.rating ?: 4f,
+                        starSize = 24
+                    )
+
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        IconButton(onClick = {
-                            coroutineScope.launch {
-                                val newState = !course.isFavorite
-                                viewModel.toggleFavorite(course.id, newState)
-                                if (newState) userViewModel.addToFavorites(course.id)
-                                else userViewModel.removeFromFavorites(course.id)
-                                Toast.makeText(
-                                    context,
-                                    if (newState) "Added to favorites" else "Removed",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                        IconButton(
+                            onClick = {
+                                coroutineScope.launch {
+                                    val newState = !course.isFavorite
+                                    viewModel.toggleFavorite(course.id, course.isFavorite)
+                                    if (newState) userViewModel.addToFavorites(course.id)
+                                    else userViewModel.removeFromFavorites(course.id)
+                                    Toast.makeText(
+                                        context,
+                                        if (newState) "Added to favorites" else "Removed",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                             }
-                        }) {
+                        ) {
                             Icon(
                                 imageVector = Icons.Default.Favorite,
                                 contentDescription = null,
@@ -120,19 +130,21 @@ fun CourseDetailsScreen(
                             )
                         }
 
-                        IconButton(onClick = {
-                            coroutineScope.launch {
-                                val newState = !course.isWatchLater
-                                viewModel.toggleWatchLater(course.id, newState)
-                                if (newState) userViewModel.addToWatchlist(course.id)
-                                else userViewModel.removeFromWatchlist(course.id)
-                                Toast.makeText(
-                                    context,
-                                    if (newState) "Added to Watchlist" else "Removed",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                        IconButton(
+                            onClick = {
+                                coroutineScope.launch {
+                                    val newState = !course.isWatchLater
+                                    viewModel.toggleWatchLater(course.id, course.isWatchLater)
+                                    if (newState) userViewModel.addToWatchlist(course.id)
+                                    else userViewModel.removeFromWatchlist(course.id)
+                                    Toast.makeText(
+                                        context,
+                                        if (newState) "Added to Watchlist" else "Removed",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                             }
-                        }) {
+                        ) {
                             Icon(
                                 imageVector = Icons.Default.WatchLater,
                                 contentDescription = null,
@@ -141,19 +153,21 @@ fun CourseDetailsScreen(
                             )
                         }
 
-                        IconButton(onClick = {
-                            coroutineScope.launch {
-                                val newState = !course.isDone
-                                viewModel.toggleDone(course.id, newState)
-                                if (newState) userViewModel.addToDoneCourses(course.id)
-                                else userViewModel.removeFromDoneCourses(course.id)
-                                Toast.makeText(
-                                    context,
-                                    if (newState) "Course Completed!" else "Removed from Done",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                        IconButton(
+                            onClick = {
+                                coroutineScope.launch {
+                                    val newState = !course.isDone
+                                    viewModel.toggleDone(course.id, course.isDone)
+                                    if (newState) userViewModel.addToDoneCourses(course.id)
+                                    else userViewModel.removeFromDoneCourses(course.id)
+                                    Toast.makeText(
+                                        context,
+                                        if (newState) "Course Completed!" else "Removed from Done",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                             }
-                        }) {
+                        ) {
                             Icon(
                                 imageVector = Icons.Default.CheckBox,
                                 contentDescription = null,
@@ -170,7 +184,7 @@ fun CourseDetailsScreen(
                     shape = RoundedCornerShape(16.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Column(Modifier.padding(16.dp)) {
+                    Column(modifier = Modifier.padding(16.dp)) {
                         Text(
                             text = course.title,
                             style = MaterialTheme.typography.bodyLarge,
@@ -199,7 +213,7 @@ fun CourseDetailsScreen(
                     shape = RoundedCornerShape(16.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Column(Modifier.padding(16.dp)) {
+                    Column(modifier = Modifier.padding(16.dp)) {
                         Text(
                             text = "Description",
                             fontWeight = FontWeight.Bold
@@ -211,8 +225,8 @@ fun CourseDetailsScreen(
                             style = MaterialTheme.typography.bodyMedium,
                             maxLines = if (expanded) Int.MAX_VALUE else 4,
                             overflow = TextOverflow.Ellipsis,
-                            onTextLayout = { textLayoutResult ->
-                                if (!expanded) hasOverflow = textLayoutResult.hasVisualOverflow
+                            onTextLayout = { result ->
+                                if (!expanded) hasOverflow = result.hasVisualOverflow
                             }
                         )
                         if (hasOverflow) {

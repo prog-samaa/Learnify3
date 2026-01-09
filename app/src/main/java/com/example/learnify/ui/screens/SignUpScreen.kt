@@ -2,7 +2,6 @@ package com.example.learnify.ui.screens
 
 import android.widget.Toast
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -20,7 +19,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.learnify.ui.theme.Green
 import com.example.learnify.ui.theme.PrimaryColor
 import com.example.learnify.viewmodel.UserViewModel
 import kotlinx.coroutines.launch
@@ -39,8 +37,6 @@ fun SignUpScreen(navController: NavController, viewModel: UserViewModel) {
     var phoneError by remember { mutableStateOf("") }
     var passwordError by remember { mutableStateOf("") }
 
-    var showSuccessMessage by remember { mutableStateOf(false) }
-
     LaunchedEffect(Unit) {
         viewModel.errorMessage.value = null
         viewModel.isSuccess.value = false
@@ -50,34 +46,44 @@ fun SignUpScreen(navController: NavController, viewModel: UserViewModel) {
 
     fun validateEmail(email: String): Boolean {
         val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$".toRegex()
-        return if (email.isEmpty()) {
-            emailError = "Email is required"
-            false
-        } else if (!emailRegex.matches(email)) {
-            emailError = "Invalid email format (e.g., user@example.com)"
-            false
-        } else {
-            emailError = ""
-            true
+        return when {
+            email.isEmpty() -> {
+                emailError = "Email is required"
+                false
+            }
+            !emailRegex.matches(email) -> {
+                emailError = "Invalid email format (e.g., user@example.com)"
+                false
+            }
+            else -> {
+                emailError = ""
+                true
+            }
         }
     }
 
     fun validatePhone(phone: String): Boolean {
-        return if (phone.isEmpty()) {
-            phoneError = "Phone number is required"
-            false
-        } else if (!phone.startsWith("01")) {
-            phoneError = "Phone must start with 01"
-            false
-        } else if (phone.length != 11) {
-            phoneError = "Phone must be exactly 11 digits"
-            false
-        } else if (!phone.all { it.isDigit() }) {
-            phoneError = "Phone must contain only numbers"
-            false
-        } else {
-            phoneError = ""
-            true
+        return when {
+            phone.isEmpty() -> {
+                phoneError = "Phone number is required"
+                false
+            }
+            !phone.startsWith("01") -> {
+                phoneError = "Phone must start with 01"
+                false
+            }
+            phone.length != 11 -> {
+                phoneError = "Phone must be exactly 11 digits"
+                false
+            }
+            !phone.all { it.isDigit() } -> {
+                phoneError = "Phone must contain only numbers"
+                false
+            }
+            else -> {
+                phoneError = ""
+                true
+            }
         }
     }
 
@@ -111,15 +117,19 @@ fun SignUpScreen(navController: NavController, viewModel: UserViewModel) {
     }
 
     fun validateName(name: String): Boolean {
-        return if (name.isEmpty()) {
-            nameError = "Name is required"
-            false
-        } else if (name.length < 2) {
-            nameError = "Name must be at least 2 characters"
-            false
-        } else {
-            nameError = ""
-            true
+        return when {
+            name.isEmpty() -> {
+                nameError = "Name is required"
+                false
+            }
+            name.length < 2 -> {
+                nameError = "Name must be at least 2 characters"
+                false
+            }
+            else -> {
+                nameError = ""
+                true
+            }
         }
     }
 
@@ -224,7 +234,7 @@ fun SignUpScreen(navController: NavController, viewModel: UserViewModel) {
                 if (phoneError.isNotEmpty()) validatePhone(phone)
             },
             singleLine = true,
-            placeholder = { Text("Phone ") },
+            placeholder = { Text("Phone") },
             leadingIcon = { Icon(Icons.Default.Phone, null, tint = Color.Gray) },
             shape = RoundedCornerShape(50),
             isError = phoneError.isNotEmpty(),
@@ -290,13 +300,10 @@ fun SignUpScreen(navController: NavController, viewModel: UserViewModel) {
         Button(
             onClick = {
                 if (validateAll()) {
+                    viewModel.errorMessage.value = null
+                    viewModel.isSuccess.value = false
                     coroutineScope.launch {
                         viewModel.register(name, email, phone, password)
-                        Toast.makeText(context, "Account created successfully!", Toast.LENGTH_SHORT).show()
-                        kotlinx.coroutines.delay(1000)
-                        navController.navigate("login") {
-                            popUpTo("signup") { inclusive = true }
-                        }
                     }
                 }
             },
@@ -304,10 +311,21 @@ fun SignUpScreen(navController: NavController, viewModel: UserViewModel) {
                 .fillMaxWidth()
                 .height(65.dp),
             shape = RoundedCornerShape(50),
-            colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
-            interactionSource = remember { MutableInteractionSource() }
+            colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor)
         ) {
             Text("Register", fontSize = 18.sp, color = Color.White)
+        }
+
+        LaunchedEffect(viewModel.isSuccess.value, viewModel.errorMessage.value) {
+            viewModel.errorMessage.value?.let { error ->
+                Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+            }
+            if (viewModel.isSuccess.value) {
+                Toast.makeText(context, "Account created successfully!", Toast.LENGTH_SHORT).show()
+                navController.navigate("login") {
+                    popUpTo("signup") { inclusive = true }
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(15.dp))

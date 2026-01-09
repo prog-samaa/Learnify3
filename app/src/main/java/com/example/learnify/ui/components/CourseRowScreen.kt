@@ -1,19 +1,14 @@
 package com.example.learnify.ui.components
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.learnify.R
 import com.example.learnify.ui.viewModels.CourseViewModel
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -21,7 +16,7 @@ import com.example.learnify.ui.viewModels.CourseViewModel
 fun CourseRowScreen(
     cardWeight: Int = 245,
     cardHeight: Int = 300,
-    viewModel: CourseViewModel = viewModel(),
+    viewModel: CourseViewModel,
     query: String,
     isTrending: Boolean = false,
     isSearch: Boolean = false,
@@ -65,30 +60,8 @@ fun CourseRowScreen(
 
     when {
         isLoading -> Loading()
-        error != null -> Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.unknownerror_icon),
-                contentDescription = "No courses Image",
-                modifier = Modifier.size(100.dp)
-            )
-        }
-        courses.isEmpty() -> Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.nocourses_icon),
-                contentDescription = "No courses Image",
-                modifier = Modifier.size(100.dp)
-            )
-        }
+        error != null -> UnknownError()
+        !isLoading && courses.isEmpty() -> NoCoursesUiError()
         else -> LazyRow(modifier = Modifier.padding(8.dp)) {
             items(courses) { course ->
                 if (isTrending) {

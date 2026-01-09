@@ -9,6 +9,9 @@ import androidx.room.Query
 @Dao
 interface CourseDao {
 
+    @Query("SELECT * FROM course_table WHERE isTrending = 0 AND category = :category AND userId = :userId ORDER BY publishedAt DESC")
+    fun getCoursesByCategoryLive(category: String, userId: String): LiveData<List<CourseEntity>>
+
     @Query("SELECT * FROM course_table WHERE isFavorite = 1 AND userId = :userId ORDER BY publishedAt DESC")
     fun getFavoriteCourses(userId: String): LiveData<List<CourseEntity>>
 

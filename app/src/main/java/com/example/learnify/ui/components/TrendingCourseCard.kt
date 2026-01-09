@@ -1,19 +1,12 @@
 package com.example.learnify.ui.components
 
-import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -25,15 +18,12 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import com.example.learnify.data.local.CourseEntity
-import com.example.learnify.ui.theme.ActiveStar
-import com.example.learnify.ui.theme.unActiveStar
-
 
 @Composable
 fun TrendingCourseCard(
@@ -41,14 +31,19 @@ fun TrendingCourseCard(
     onCourseClick: (CourseEntity) -> Unit
 ) {
     var pressed by remember { mutableStateOf(false) }
-    val scale by animateFloatAsState(if (pressed) 0.95f else 1f)
+    val scale by animateFloatAsState(
+        targetValue = if (pressed) 0.95f else 1f
+    )
 
     Card(
         modifier = Modifier
             .width(330.dp)
             .height(210.dp)
             .padding(horizontal = 8.dp)
-            .graphicsLayer { scaleX = scale; scaleY = scale }
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .pointerInput(Unit) {
                 detectTapGestures(
                     onPress = {
@@ -108,7 +103,7 @@ fun TrendingCourseCard(
                     fontSize = 12.sp,
                     color = Color.White,
                     maxLines = 1,
-                    style = androidx.compose.ui.text.TextStyle(
+                    style = TextStyle(
                         shadow = Shadow(
                             color = Color.Black.copy(alpha = 0.5f),
                             offset = Offset(2f, 2f),
@@ -126,20 +121,10 @@ fun TrendingCourseCard(
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                Row {
-                    val rating = course.rating ?: 4f
-                    Log.d("CourseRating", "Course ${course.title} -> $rating")
-
-                    repeat(5) { index ->
-                        val tint = if (index < rating.toInt()) ActiveStar else unActiveStar
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = null,
-                            tint = tint,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-                }
+                RatingStars(
+                    rating = course.rating ?: 4f,
+                    starSize = 18
+                )
             }
         }
     }
